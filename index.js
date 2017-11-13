@@ -83,23 +83,28 @@ class Celula {
     }
   }
   desenhar() {
-    let span = $('<span>');
-    span.css({
-      flex: 1,
-      textAlign: 'center'
-    });
-
     this.input.css({
-      width: '100%'
+      flex: 1,
+      borderRadius: 50,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: 'lightgray',
+      paddingTop: 5,
+      paddingBottom: 5,
+      paddingLeft: 10,
+      paddingRight: 10
     });
-    span.append(this.input);
-    return span;
+    return this.input;
   }
 }
 
 $(() => {
   let tabela = new Tabela();
   let containerTabela = $('<div>');
+  containerTabela.css({
+    marginTop: 5,
+    marginBottom: 5
+  });
   let containerFiltros = $('<div>');
   containerFiltros.css({
     display: 'flex',
@@ -113,10 +118,19 @@ $(() => {
 
   let filtros = [];
 
-  function adicionarFiltro() {
+  function adicionarFiltro(placeholder) {
     let input = $('<input>');
+    input.prop('placeholder', placeholder);
     input.css({
-      flex: 1
+      flex: 1,
+      borderRadius: 50,
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: 'gray',
+      paddingTop: 5,
+      paddingBottom: 5,
+      paddingLeft: 10,
+      paddingRight: 10
     });
     input.on('keyup', () => {
       let intersecaoIndices = [];
@@ -144,54 +158,51 @@ $(() => {
   }
 
   function removerFiltro() {
-
     if (filtros.length > 1) {
       filtros[filtros.length - 1].remove();
       filtros.splice(filtros.legnth - 1, 1);
     }
   }
 
-  adicionarFiltro();
-
-  let ampliarLargura = $('<button>');
-  ampliarLargura.on('click', () => {
-    tabela.ampliarLargura();
+  function redesenharTabela() {
     containerTabela.empty();
     containerTabela.append(tabela.desenhar());
+  }
 
-    adicionarFiltro();
-  });
-  ampliarLargura.text('+ largura');
-  $(document.body).append(ampliarLargura);
+  adicionarFiltro('Nome');
+  adicionarFiltro('RG');
+  adicionarFiltro('CPF');
+  adicionarFiltro('Endereço');
 
-  let reduzirLargura = $('<button>');
-  reduzirLargura.on('click', () => {
-    tabela.reduzirLargura();
-    containerTabela.empty();
-    containerTabela.append(tabela.desenhar());
-
-    removerFiltro();
-  });
-  reduzirLargura.text('- largura');
-  $(document.body).append(reduzirLargura);
+  tabela.ampliarLargura();
+  tabela.ampliarLargura();
+  tabela.ampliarLargura();
+  tabela.ampliarAltura();
+  redesenharTabela();
 
   let ampliarAltura = $('<button>');
+  ampliarAltura.css({
+    width: 30,
+    height: 30,
+    fontWeight: 'bold'
+  });
   ampliarAltura.on('click', () => {
     tabela.ampliarAltura();
-    containerTabela.empty();
-    containerTabela.append(tabela.desenhar());
+    redesenharTabela();
   });
-  ampliarAltura.text('+ altura');
+  ampliarAltura.text('+');
   $(document.body).append(ampliarAltura);
 
   let reduzirAltura = $('<button>');
+  reduzirAltura.css({
+    width: 30,
+    height: 30,
+    fontWeight: 'bold'
+  });
   reduzirAltura.on('click', () => {
     tabela.reduzirAltura();
-    containerTabela.empty();
-    containerTabela.append(tabela.desenhar());
+    redesenharTabela();
   });
-  reduzirAltura.text('- altura');
+  reduzirAltura.text('-');
   $(document.body).append(reduzirAltura);
-
-
 });
