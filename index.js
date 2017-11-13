@@ -18,13 +18,13 @@ class Tabela {
     }
   }
   percorrerLargura(indice, callback) {
-    for (let i; i < this.largura; i++) {
-      callback(this.celulas[indice][i]);
+    for (let i = 0; i < this.largura; i++) {
+      callback(i, this.celulas[indice][i]);
     }
   }
   percorrerAltura(indice, callback) {
-    for (let i; i < this.celulas.length; i++) {
-      callback(this.celulas[i][indice]);
+    for (let i = 0; i < this.celulas.length; i++) {
+      callback(i, this.celulas[i][indice]);
     }
   }
   ampliarAltura() {
@@ -44,6 +44,16 @@ class Tabela {
       this.celulas.splice(altura - 1, 1);
     }
   }
+  projetarAltura(indices) {
+    let tabela = this.desenhar();
+    let linhas = tabela.children();
+    for (let i = 0; i < linhas.length; i++) {
+      if (indices.indexOf(i) == -1) {
+        $(linhas[i]).hide();
+      }
+    }
+    return tabela;
+  }
   desenhar() {
     let tabela = $('<div>');
     for (let i = 0; i < this.celulas.length; i++) {
@@ -62,7 +72,15 @@ class Tabela {
 }
 
 class Celula {
+  constructor() {
+    this.input = $('<input>');
+  }
   contem(conteudo) {
+    if (!conteudo) {
+      return true;
+    } else {
+      return this.input.val().match(new RegExp(conteudo, 'g'));
+    }
   }
   desenhar() {
     let span = $('<span>');
@@ -70,11 +88,11 @@ class Celula {
       flex: 1,
       textAlign: 'center'
     });
-    let input = $('<input>');
-    input.css({
+
+    this.input.css({
       width: '100%'
     });
-    span.append(input);
+    span.append(this.input);
     return span;
   }
 }
@@ -82,23 +100,77 @@ class Celula {
 $(() => {
   let tabela = new Tabela();
   let containerTabela = $('<div>');
+  let containerFiltros = $('<div>');
+  containerFiltros.css({
+    display: 'flex',
+    marginTop: 5,
+    marginBottom: 5
+  });
   containerTabela.append(tabela.desenhar());
+
+  $(document.body).append(containerFiltros);
   $(document.body).append(containerTabela);
+
+  let filtros = [];
+
+  function adicionarFiltro() {
+    let input = $('<input>');
+    input.css({
+      flex: 1
+    });
+    input.on('keyup', () => {
+      let intersecaoIndices = [];
+      tabela.percorrerAltura(0, (i, celula) => {
+        if (celula.contem(filtros[0].val())) {
+          intersecaoIndices.push(i);
+        }
+      });
+      for (let j = 1; j < filtros.length; j++) {
+        let indices = [];
+        tabela.percorrerAltura(j, (i, celula) => {
+          if (celula.contem(filtros[j].val())) {
+            indices.push(i);
+          }
+        });
+        intersecaoIndices = indices.filter(x => {
+          return intersecaoIndices.indexOf(x) > -1;
+        });
+      }
+      containerTabela.empty();
+      containerTabela.append(tabela.projetarAltura(intersecaoIndices));
+    });
+    filtros.push(input);
+    containerFiltros.append(input);
+  }
+
+  function removerFiltro() {
+
+    if (filtros.length > 1) {
+      filtros[filtros.length - 1].remove();
+      filtros.splice(filtros.legnth - 1, 1);
+    }
+  }
+
+  adicionarFiltro();
 
   let ampliarLargura = $('<button>');
   ampliarLargura.on('click', () => {
     tabela.ampliarLargura();
     containerTabela.empty();
     containerTabela.append(tabela.desenhar());
+
+    adicionarFiltro();
   });
   ampliarLargura.text('+ largura');
   $(document.body).append(ampliarLargura);
-  
+
   let reduzirLargura = $('<button>');
   reduzirLargura.on('click', () => {
     tabela.reduzirLargura();
     containerTabela.empty();
     containerTabela.append(tabela.desenhar());
+
+    removerFiltro();
   });
   reduzirLargura.text('- largura');
   $(document.body).append(reduzirLargura);
