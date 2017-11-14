@@ -6,6 +6,45 @@
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
+  <!-- Include Dexie -->
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+
+  <script>
+  /*
+      //
+      // Define your database
+      //
+      var db = new Dexie("clientes_juridicos");
+      db.version(1).stores({
+          clientesJuridicos: 'nome,rg,cpf,endereco'
+      });
+
+      //
+      // Put some data into it
+      //
+      db.clientesJuridicos.put({nome: "Nicolas", shoeSize: 8}).then (function(){
+          //
+          // Then when data is stored, read from it
+          //
+          return db.clientesJuridicos.get('Nicolas');
+      }).then(function (friend) {
+          //
+          // Display the result
+          //
+          alert ("Nicolas has shoe size " + friend.shoeSize);
+      }).catch(function(error) {
+         //
+         // Finally don't forget to catch any error
+         // that could have happened anywhere in the
+         // code blocks above.
+         //
+         alert ("Ooops: " + error);
+      });
+  */
+  </script>
+
+  <script src="Tabela.js"></script>
+  <script src="Celula.js"></script>
   <script src="index.js"></script>
   <style>
     body {
