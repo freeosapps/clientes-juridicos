@@ -6,13 +6,27 @@
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
-  <!-- Include Dexie -->
-  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/2.0.1/dexie.min.js"></script>
 
-  <script src="Tabela.js"></script>
-  <script src="Celula.js"></script>
-  <script src="index.js"></script>
-  <link rel="stylesheet" href="index.css"></link>
+  <script src="Indice.js"></script>
+  <script src="Pagina.js"></script>
+
+  <style>
+    body {
+      /*background-color: lavender;*/
+    }
+    button {
+      outline: 0;
+    }
+  </style>
+
+  <script>
+    $(() => {
+        let pagina = new Pagina(1);
+        $(document.body).append(pagina.construir());
+    });
+  </script>
+
 </head>
 <body>
 

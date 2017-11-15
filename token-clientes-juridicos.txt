@@ -1,0 +1,12 @@
+{
+"dropbox": [
+{
+"access-token": "7dDIyTXdafAAAAAAAAAACgvJ43ve5oghZaNq9ikLhJIkImZOklwwhW5E7x4H0t12"
+}
+],
+"jsonbin": [
+{
+"api-key": "$2a$10$oyD6vl0PtM9f2uMcEQgj8u6f/Y5KvfnytezKfJwsTSLZAQvZtH6km"
+}
+]
+}
