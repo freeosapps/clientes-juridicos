@@ -2,7 +2,7 @@ class IndiceAnalitico {
   constructor() {
     this.db = new Dexie('ClientesJuridicos');
     this.db.version(1).stores({
-      indices: '++id,idPagina'
+      indices: '++id,idPagina,valor'
     });
     this.db.open()
     .catch((error) => {
@@ -21,7 +21,8 @@ class IndiceAnalitico {
       },
       botaoAdicionarIndice: {
         borderStyle: 'none',
-        backgroundColor: 'lightgreen',
+        backgroundColor: 'limegreen',
+        fontFamily: 'arial',
         fontWeight: 'bold',
         color: 'white',
         marginLeft: 5,
@@ -50,9 +51,7 @@ class IndiceAnalitico {
         cursor: 'pointer',
         borderRadius: '1px 10px 10px 1px',
         position: 'relative',
-        left: -5,
-        paddingTop: 5,
-        paddingBottom: 5
+        left: -5
       },
       conteinerIndice: {
         marginRight: 10
@@ -112,7 +111,8 @@ class IndiceAnalitico {
       campoTexto.css(this.styles.campoTexto);
       campoTexto.on('blur', () => {
         return that.db.indices.add({
-          idPagina: idPagina
+          idPagina: idPagina,
+          valor: campoTexto.val()
         })
         .then((id) => {
           $.data(iconeRemover, 'id', id);
@@ -160,7 +160,8 @@ class IndiceAnalitico {
     campoTexto.css(this.styles.campoTexto);
     campoTexto.on('blur', () => {
       return this.db.indices.add({
-        idPagina: idPagina
+        idPagina: idPagina,
+        valor: campoTexto.val()
       })
       .then((id) => {
         $.data(iconeRemover, 'id', id);

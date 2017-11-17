@@ -23,6 +23,16 @@
 
   <script>
     $(() => {
+      this.db = new Dexie('ClientesJuridicos');
+      this.db.version(1).stores({
+        imagens: '++id,idPagina,dataUri',
+        indices: '++id,idPagina,valor'
+      });
+      this.db.open()
+      .catch((error) => {
+        throw error;
+      });
+
         let pagina = new Pagina(1);
         let indiceAnalitico = new IndiceAnalitico();
         $(document.body).append(indiceAnalitico.construirIndices());
