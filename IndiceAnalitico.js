@@ -1,5 +1,13 @@
 class IndiceAnalitico {
   constructor() {
+    this.db = new Dexie('ClientesJuridicos');
+    this.db.version(1).stores({
+      indices: '++id,idPagina'
+    });
+    this.db.open()
+    .catch((error) => {
+      throw error;
+    });
     this.styles = {
       fielsetIndices: {
         fontFamily: 'arial',
@@ -19,9 +27,8 @@ class IndiceAnalitico {
         marginLeft: 5,
         marginRight: 5,
         borderRadius: 50,
-        padding: 5,
-        width: 30,
-        height: 30,
+        width: 20,
+        height: 20,
         cursor: 'pointer'
       },
       textoLegendaFieldsetIndices: {
@@ -49,6 +56,15 @@ class IndiceAnalitico {
       },
       conteinerIndice: {
         marginRight: 10
+      },
+      campoTexto: {
+        padding: 5,
+        borderStyle: 'solid',
+        borderWidth: 2,
+        borderColor: 'cornflowerblue',
+        backgroundColor: 'aliceblue',
+        margin: 5,
+        height: 30
       }
     };
   }
@@ -60,14 +76,11 @@ class IndiceAnalitico {
   }
 
   _removerIndice(id) {
-
+    return this.db.indices.where({id: id}).delete();
   }
 
   construirIndices(idPagina) {
-    let indice = new Indice();
-
-    let indices = [];
-    indices.push(indice);
+    let that = this;
 
     let botaoAdicionarIndice = $('<button>');
     botaoAdicionarIndice.prop('title', 'Adicionar um índice');
@@ -75,12 +88,8 @@ class IndiceAnalitico {
     botaoAdicionarIndice.css(this.styles.botaoAdicionarIndice);
     botaoAdicionarIndice.text('+');
     botaoAdicionarIndice.on('click', () => {
-      let novoIndice = new Indice();
-      indices.push(novoIndice);
-
       let conteinerIndice = $('<span>');
       conteinerIndice.css(this.styles.conteinerIndice);
-      conteinerIndice.append(novoIndice.construir());
 
       let iconeRemover = $('<span>');
       iconeRemover.css(this.styles.iconeRemover);
@@ -89,11 +98,28 @@ class IndiceAnalitico {
       iconeRemover.prop('alt', 'Remover');
       iconeRemover.on('click', () => {
         conteinerIndice.remove();
-        this._removerIndice(id).catch((error) => {
-          console.log(error);
+        let id = $.data(iconeRemover, 'id');
+        if (id) {
+          that._removerIndice(id)
+          .catch((error) => {
+            throw error;
+          });
+        }
+      });
+
+      let campoTexto = $('<input>');
+      campoTexto.prop('type', 'text');
+      campoTexto.css(this.styles.campoTexto);
+      campoTexto.on('blur', () => {
+        return that.db.indices.add({
+          idPagina: idPagina
+        })
+        .then((id) => {
+          $.data(iconeRemover, 'id', id);
         });
       });
 
+      conteinerIndice.append(campoTexto);
       conteinerIndice.append(iconeRemover);
 
       conteinerIndices.append(conteinerIndice);
@@ -112,7 +138,6 @@ class IndiceAnalitico {
 
     let conteinerIndice = $('<span>');
     conteinerIndice.css(this.styles.conteinerIndice);
-    conteinerIndice.append(indice.construir());
 
     let iconeRemover = $('<span>');
     iconeRemover.css(this.styles.iconeRemover);
@@ -121,11 +146,28 @@ class IndiceAnalitico {
     iconeRemover.prop('alt', 'Remover');
     iconeRemover.on('click', () => {
       conteinerIndice.remove();
-      this._removerIndice(id).catch((error) => {
-        console.log(error);
+      let id = $.data(iconeRemover, 'id');
+      if (id) {
+        that._removerIndice(id)
+        .catch((error) => {
+          throw error;
+        });
+      }
+    });
+
+    let campoTexto = $('<input>');
+    campoTexto.prop('type', 'text');
+    campoTexto.css(this.styles.campoTexto);
+    campoTexto.on('blur', () => {
+      return this.db.indices.add({
+        idPagina: idPagina
+      })
+      .then((id) => {
+        $.data(iconeRemover, 'id', id);
       });
     });
 
+    conteinerIndice.append(campoTexto);
     conteinerIndice.append(iconeRemover);
 
     conteinerIndices.append(conteinerIndice);

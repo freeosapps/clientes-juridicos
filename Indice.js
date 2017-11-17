@@ -36,6 +36,11 @@ class Indice {
     campoTexto.prop('type', 'text');
     return campoTexto;
   }
+  apagar() {
+    if (this.id) {
+      this.db.indices.where({id: this.id}).delete();
+    }
+  }
   mostrar() {
 
   }
