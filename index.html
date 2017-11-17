@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/2.0.1/dexie.min.js"></script>
 
   <script src="Indice.js"></script>
+  <script src="IndiceAnalitico.js"></script>
   <script src="Pagina.js"></script>
 
   <style>
@@ -23,6 +24,8 @@
   <script>
     $(() => {
         let pagina = new Pagina(1);
+        let indiceAnalitico = new IndiceAnalitico();
+        $(document.body).append(indiceAnalitico.construirIndices());
         $(document.body).append(pagina.construir());
     });
   </script>

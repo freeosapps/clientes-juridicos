@@ -26,7 +26,7 @@ class Pagina {
         color: 'white',
         cursor: 'pointer'
       },
-      iconeFechar: {
+      iconeRemover: {
         borderRadius: 20,
         borderStyle: 'solid',
         borderWidth: 1,
@@ -54,47 +54,7 @@ class Pagina {
         display: 'flex',
         flexDirection: 'column'
       },
-      fielsetIndices: {
-        fontFamily: 'arial',
-        fontWeight: ' bold',
-        margin: 5,
-        color: 'dimgrey',
-        borderRadius: 5,
-        borderStyle: 'dotted',
-        borderWidth: 1,
-        backgroundColor: 'white'
-      },
       conteinerAnexarImagens: {
-        margin: 5
-      },
-      botaoAdicionarIndice: {
-        borderStyle: 'none',
-        backgroundColor: 'lightgreen',
-        fontWeight: 'bold',
-        color: 'white',
-        marginLeft: 5,
-        marginRight: 5,
-        borderRadius: 50,
-        padding: 5,
-        width: 30,
-        height: 30,
-        cursor: 'pointer'
-      },
-      botaoRemoverIndice: {
-        borderStyle: 'none',
-        backgroundColor: 'lightcoral',
-        fontWeight: 'bold',
-        color: 'white',
-        marginLeft: 5,
-        marginRight: 5,
-        borderRadius: 50,
-        padding: 5,
-        width: 30,
-        height: 30,
-        display: 'none',
-        cursor: 'pointer'
-      },
-      textoLegendaFieldsetIndices: {
         margin: 5
       }
     };
@@ -125,19 +85,19 @@ class Pagina {
     let conteinerImagem = $('<div>');
     conteinerImagem.css(this.styles.conteinerImagem);
 
-    let iconeFechar = $('<div>');
-    iconeFechar.css(this.styles.iconeFechar);
-    iconeFechar.text('x');
-    iconeFechar.prop('title', 'Remover');
-    iconeFechar.prop('alt', 'Remover');
-    iconeFechar.on('click', () => {
+    let iconeRemover = $('<div>');
+    iconeRemover.css(this.styles.iconeRemover);
+    iconeRemover.text('x');
+    iconeRemover.prop('title', 'Remover');
+    iconeRemover.prop('alt', 'Remover');
+    iconeRemover.on('click', () => {
       conteinerImagem.remove();
       this._removerImagem(id).catch((error) => {
         console.log(error);
       });
     });
 
-    conteinerImagem.append(iconeFechar);
+    conteinerImagem.append(iconeRemover);
     conteinerImagem.append(imagem);
 
     imagem.prop('src', dataUri);
@@ -192,63 +152,10 @@ class Pagina {
       anexarImagens.text('Anexar imagens');
       anexarImagens.append(campoArquivo);
 
-      let indice = new Indice();
-
-      let indices = [];
-      indices.push(indice);
-
       let conteinerAnexarImagens = $('<div>');
       conteinerAnexarImagens.css(this.styles.conteinerAnexarImagens);
       conteinerAnexarImagens.append(anexarImagens);
 
-      let botaoRemoverIndice = $('<button>');
-      botaoRemoverIndice.prop('title', 'Remover um índice');
-      botaoRemoverIndice.prop('alt', 'Remover um índice');
-      botaoRemoverIndice.css(this.styles.botaoRemoverIndice);
-      botaoRemoverIndice.text('-');
-      botaoRemoverIndice.on('click', () => {
-        if (indices.length > 1) {
-          indices.pop();
-          conteinerIndices.children().last().remove();
-        }
-        if (indices.length == 1) {
-          botaoRemoverIndice.hide();
-        }
-      });
-
-      let botaoAdicionarIndice = $('<button>');
-      botaoAdicionarIndice.prop('title', 'Adicionar um índice');
-      botaoAdicionarIndice.prop('alt', 'Adicionar um índice');
-      botaoAdicionarIndice.css(this.styles.botaoAdicionarIndice);
-      botaoAdicionarIndice.text('+');
-      botaoAdicionarIndice.on('click', () => {
-        let novoIndice = new Indice();
-        indices.push(novoIndice);
-        conteinerIndices.append(novoIndice.construir());
-        botaoRemoverIndice.show();
-      });
-
-      let legendaFielsetIndices = $('<legend>');
-
-      let textoLegendaFieldsetIndices = $('<span>');
-      textoLegendaFieldsetIndices.append('Índices');
-      textoLegendaFieldsetIndices.css(this.styles.textoLegendaFieldsetIndices);
-
-      legendaFielsetIndices.append(botaoRemoverIndice);
-      legendaFielsetIndices.append(textoLegendaFieldsetIndices);
-      legendaFielsetIndices.append(botaoAdicionarIndice);
-
-      let conteinerIndices = $('<span>');
-      conteinerIndices.append(indice.construir());
-
-      let fielsetIndices = $('<fieldset>');
-      fielsetIndices.css(this.styles.fielsetIndices);
-      fielsetIndices.append(legendaFielsetIndices);
-      fielsetIndices.append(conteinerIndices);
-      //fielsetIndices.append(botaoRemoverIndice);
-      //fielsetIndices.append(botaoAdicionarIndice);
-
-      conteiner.append(fielsetIndices);
       conteiner.append(conteinerAnexarImagens);
       conteiner.append(conteinerImagens);
 
