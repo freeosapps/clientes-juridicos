@@ -78,6 +78,10 @@ class IndiceAnalitico {
     return this.db.indices.where({id: id}).delete();
   }
 
+  _listarIndices() {
+    return this.db.indices;
+  }
+
   construirIndices(idPagina) {
     let that = this;
 
@@ -108,6 +112,7 @@ class IndiceAnalitico {
 
       let campoTexto = $('<input>');
       campoTexto.prop('type', 'text');
+      campoTexto.attr('list', 'indices');
       campoTexto.css(this.styles.campoTexto);
       campoTexto.on('blur', () => {
         return that.db.indices.add({
@@ -119,6 +124,15 @@ class IndiceAnalitico {
         });
       });
 
+      let listaIndices = $('<datalist>')
+      listaIndices.prop('id', 'indices');
+      this._listarIndices().each((indice) => {
+        let opcao = $('<option>');
+        opcao.val(indice.valor);
+        listaIndices.append(opcao);
+      });
+
+      conteinerIndice.append(listaIndices);
       conteinerIndice.append(campoTexto);
       conteinerIndice.append(iconeRemover);
 
@@ -157,6 +171,7 @@ class IndiceAnalitico {
 
     let campoTexto = $('<input>');
     campoTexto.prop('type', 'text');
+    campoTexto.attr('list', 'indices');
     campoTexto.css(this.styles.campoTexto);
     campoTexto.on('blur', () => {
       return this.db.indices.add({
@@ -168,6 +183,15 @@ class IndiceAnalitico {
       });
     });
 
+    let listaIndices = $('<datalist>')
+    listaIndices.prop('id', 'indices');
+    this._listarIndices().each((indice) => {
+      let opcao = $('<option>');
+      opcao.val(indice.valor);
+      listaIndices.append(opcao);
+    });
+
+    conteinerIndice.append(listaIndices);
     conteinerIndice.append(campoTexto);
     conteinerIndice.append(iconeRemover);
 
