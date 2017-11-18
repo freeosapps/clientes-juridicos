@@ -2,12 +2,10 @@ class IndiceAnalitico {
   constructor() {
     this.db = new Dexie('ClientesJuridicos');
     this.db.version(1).stores({
-      indices: '++id,idPagina,valor'
+      indices: '++id,valor',
+      associacoes: 'idIndice,idPagina'
     });
-    this.db.open()
-    .catch((error) => {
-      throw error;
-    });
+    this.db.open();
     this.styles = {
       fielsetIndices: {
         fontFamily: 'arial',
@@ -33,7 +31,7 @@ class IndiceAnalitico {
         cursor: 'pointer'
       },
       textoLegendaFieldsetIndices: {
-        margin: 5
+        color: 'gray'
       },
       iconeRemover: {
         display: 'inline-block',
@@ -51,7 +49,7 @@ class IndiceAnalitico {
         cursor: 'pointer',
         borderRadius: '1px 10px 10px 1px',
         position: 'relative',
-        left: -5
+        left: -4
       },
       conteinerIndice: {
         marginRight: 10
@@ -69,17 +67,96 @@ class IndiceAnalitico {
   }
 
   manterIndice() {
-    let campoTexto = $('<input>');
-    campoTexto.prop('type', 'text');
-    return campoTexto;
+
+  }
+
+  _adicionarIndice(valor) {
+    return this.db.indices.add({
+      valor: valor
+    });
   }
 
   _removerIndice(id) {
     return this.db.indices.where({id: id}).delete();
   }
 
-  _listarIndices() {
-    return this.db.indices;
+  _alterarIndice(id, valor) {
+    return this.db.indices.update(id, {valor: valor});
+  }
+
+  _listarIndices(valor) {
+    if (valor) {
+      return this.db.indices.where('valor').equalsIgnoreCase(valor);
+    } else {
+      return this.db.indices;
+    }
+  }
+
+  _listarAssociacoes(idIndice, idPagina) {
+    return this.db.associacoes.where({
+      idIndice: idIndice,
+      idPagina: idPagina
+    });
+  }
+
+  _adicionarAssociacao(idIndice, idPagina) {
+    return this.db.associacoes.add({
+      idIndice: idIndice,
+      idPagina: idPagina
+    })
+  }
+
+  _removerAssociacao(idIndice, idPagina) {
+    return this.db.associacoes.where({idIndice: idIndice, idPagina: idPagina}).delete();
+  }
+
+  _persistirAlteracoes(conteinerIndice, campoTexto, idPagina) {
+    let that = this;
+    let id = $.data(conteinerIndice, 'id');
+    let valor = campoTexto.val();
+    if (id) {
+      if (valor.trim()) {
+        that._listarIndices(valor)
+        .first((indice) => {
+          if (indice) {
+            that._removerIndice(id);
+            $.data(conteinerIndice, 'id', indice.id);
+            that._adicionarAssociacao(indice.id, idPagina);
+          } else {
+            that._alterarIndice(id, valor);
+          }
+        });
+      } else {
+        that._removerAssociacao(id, idPagina);
+        that._removerIndice(id);
+        $.data(conteinerIndice, 'id', '');
+      }
+    } else {
+      if (valor.trim()) {
+        that._listarIndices(valor)
+        .first((indice) => {
+          if (indice) {
+            that._listarAssociacoes(indice.id, idPagina)
+            .first((associacao) => {
+              if (!associacao) {
+                that._adicionarAssociacao(indice.id, idPagina)
+                .then((id) => {
+                  $.data(conteinerIndice, 'id', id);
+                });
+              } else {
+                $.data(conteinerIndice, 'id', indice.id);
+              }
+            });
+          } else {
+            that._adicionarIndice(valor)
+            .then((id) => {
+              $.data(conteinerIndice, 'id', id);
+              that._adicionarAssociacao(id, idPagina);
+            });
+          }
+        });
+      }
+    }
   }
 
   construirIndices(idPagina) {
@@ -101,12 +178,9 @@ class IndiceAnalitico {
       iconeRemover.prop('alt', 'Remover');
       iconeRemover.on('click', () => {
         conteinerIndice.remove();
-        let id = $.data(iconeRemover, 'id');
+        let id = $.data(conteinerIndice, 'id');
         if (id) {
-          that._removerIndice(id)
-          .catch((error) => {
-            throw error;
-          });
+          that._removerIndice(id);
         }
       });
 
@@ -115,13 +189,7 @@ class IndiceAnalitico {
       campoTexto.attr('list', 'indices');
       campoTexto.css(this.styles.campoTexto);
       campoTexto.on('blur', () => {
-        return that.db.indices.add({
-          idPagina: idPagina,
-          valor: campoTexto.val()
-        })
-        .then((id) => {
-          $.data(iconeRemover, 'id', id);
-        });
+        that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
       });
 
       let listaIndices = $('<datalist>')
@@ -160,12 +228,9 @@ class IndiceAnalitico {
     iconeRemover.prop('alt', 'Remover');
     iconeRemover.on('click', () => {
       conteinerIndice.remove();
-      let id = $.data(iconeRemover, 'id');
+      let id = $.data(conteinerIndice, 'id');
       if (id) {
-        that._removerIndice(id)
-        .catch((error) => {
-          throw error;
-        });
+        that._removerIndice(id);
       }
     });
 
@@ -174,13 +239,7 @@ class IndiceAnalitico {
     campoTexto.attr('list', 'indices');
     campoTexto.css(this.styles.campoTexto);
     campoTexto.on('blur', () => {
-      return this.db.indices.add({
-        idPagina: idPagina,
-        valor: campoTexto.val()
-      })
-      .then((id) => {
-        $.data(iconeRemover, 'id', id);
-      });
+      that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
     });
 
     let listaIndices = $('<datalist>')

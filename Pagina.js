@@ -4,10 +4,7 @@ class Pagina {
     this.db.version(1).stores({
       imagens: '++id,idPagina,dataUri'
     });
-    this.db.open()
-    .catch((error) => {
-      throw error;
-    });
+    this.db.open();
     this.id = id;
     this.styles = {
       campoArquivo: {
@@ -19,7 +16,7 @@ class Pagina {
         borderWidth: 6,
         borderColor: 'white',
         borderRadius: 25,
-        padding: 10,
+        padding: 5,
         fontFamily: 'arial',
         backgroundColor: 'cornflowerblue',
         fontWeight: 'bold',
@@ -92,9 +89,7 @@ class Pagina {
     iconeRemover.prop('alt', 'Remover');
     iconeRemover.on('click', () => {
       conteinerImagem.remove();
-      this._removerImagem(id).catch((error) => {
-        console.log(error);
-      });
+      this._removerImagem(id);
     });
 
     conteinerImagem.append(iconeRemover);

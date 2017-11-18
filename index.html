@@ -26,7 +26,8 @@
       this.db = new Dexie('ClientesJuridicos');
       this.db.version(1).stores({
         imagens: '++id,idPagina,dataUri',
-        indices: '++id,idPagina,valor'
+        indices: '++id,valor',
+        associacoes: 'idIndice,idPagina'
       });
       this.db.open()
       .catch((error) => {
