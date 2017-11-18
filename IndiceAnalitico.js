@@ -136,7 +136,7 @@ class IndiceAnalitico {
       if (valor.trim()) {
         that._listarIndices(valor)
         .first((indice) => {
-          if (indice) {
+          if (indice && indice.id != id) {
             that._removerAssociacao(id, idPagina);
             that._removerIndice(id);
             that._adicionarAssociacao(indice.id, idPagina);
