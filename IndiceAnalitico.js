@@ -159,64 +159,8 @@ class IndiceAnalitico {
     }
   }
 
-  construirIndices(idPagina) {
+  _construirConteinerDeIndice(idPagina) {
     let that = this;
-
-    let botaoAdicionarIndice = $('<button>');
-    botaoAdicionarIndice.prop('title', 'Adicionar um índice');
-    botaoAdicionarIndice.prop('alt', 'Adicionar um índice');
-    botaoAdicionarIndice.css(this.styles.botaoAdicionarIndice);
-    botaoAdicionarIndice.text('+');
-    botaoAdicionarIndice.on('click', () => {
-      let conteinerIndice = $('<span>');
-      conteinerIndice.css(this.styles.conteinerIndice);
-
-      let iconeRemover = $('<span>');
-      iconeRemover.css(this.styles.iconeRemover);
-      iconeRemover.text('x');
-      iconeRemover.prop('title', 'Remover');
-      iconeRemover.prop('alt', 'Remover');
-      iconeRemover.on('click', () => {
-        conteinerIndice.remove();
-        let id = $.data(conteinerIndice, 'id');
-        if (id) {
-          that._removerIndice(id);
-        }
-      });
-
-      let campoTexto = $('<input>');
-      campoTexto.prop('type', 'text');
-      campoTexto.attr('list', 'indices');
-      campoTexto.css(this.styles.campoTexto);
-      campoTexto.on('blur', () => {
-        that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
-      });
-
-      let listaIndices = $('<datalist>')
-      listaIndices.prop('id', 'indices');
-      this._listarIndices().each((indice) => {
-        let opcao = $('<option>');
-        opcao.val(indice.valor);
-        listaIndices.append(opcao);
-      });
-
-      conteinerIndice.append(listaIndices);
-      conteinerIndice.append(campoTexto);
-      conteinerIndice.append(iconeRemover);
-
-      conteinerIndices.append(conteinerIndice);
-    });
-
-    let legendaFielsetIndices = $('<legend>');
-
-    let textoLegendaFieldsetIndices = $('<span>');
-    textoLegendaFieldsetIndices.append('Índices');
-    textoLegendaFieldsetIndices.css(this.styles.textoLegendaFieldsetIndices);
-
-    legendaFielsetIndices.append(textoLegendaFieldsetIndices);
-    legendaFielsetIndices.append(botaoAdicionarIndice);
-
-    let conteinerIndices = $('<span>');
 
     let conteinerIndice = $('<span>');
     conteinerIndice.css(this.styles.conteinerIndice);
@@ -239,7 +183,11 @@ class IndiceAnalitico {
     campoTexto.attr('list', 'indices');
     campoTexto.css(this.styles.campoTexto);
     campoTexto.on('blur', () => {
+      campoTexto.val(campoTexto.val().replace(/\s+$/, ''));
       that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
+    });
+    campoTexto.on('keyup', () => {
+      campoTexto.val(campoTexto.val().replace(/^\s+/, ''));
     });
 
     let listaIndices = $('<datalist>')
@@ -254,7 +202,33 @@ class IndiceAnalitico {
     conteinerIndice.append(campoTexto);
     conteinerIndice.append(iconeRemover);
 
-    conteinerIndices.append(conteinerIndice);
+    return conteinerIndice;
+  }
+
+  construirIndices(idPagina) {
+    let that = this;
+
+    let conteinerIndices = $('<span>');
+
+    let botaoAdicionarIndice = $('<button>');
+    botaoAdicionarIndice.prop('title', 'Adicionar um índice');
+    botaoAdicionarIndice.prop('alt', 'Adicionar um índice');
+    botaoAdicionarIndice.css(this.styles.botaoAdicionarIndice);
+    botaoAdicionarIndice.text('+');
+    botaoAdicionarIndice.on('click', () => {
+      conteinerIndices.append(that._construirConteinerDeIndice(idPagina));
+    });
+
+    let legendaFielsetIndices = $('<legend>');
+
+    let textoLegendaFieldsetIndices = $('<span>');
+    textoLegendaFieldsetIndices.append('Índices');
+    textoLegendaFieldsetIndices.css(this.styles.textoLegendaFieldsetIndices);
+
+    legendaFielsetIndices.append(textoLegendaFieldsetIndices);
+    legendaFielsetIndices.append(botaoAdicionarIndice);
+
+    conteinerIndices.append(this._construirConteinerDeIndice(idPagina));
 
     let fielsetIndices = $('<fieldset>');
     fielsetIndices.css(this.styles.fielsetIndices);
