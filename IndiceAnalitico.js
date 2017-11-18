@@ -72,10 +72,6 @@ class IndiceAnalitico {
     };
   }
 
-  manterIndice() {
-
-  }
-
   _adicionarIndice(valor) {
     return this.db.indices.add({
       valor: valor
@@ -297,11 +293,22 @@ class IndiceAnalitico {
     return fielsetIndices;
   }
 
-  // Opcional, apenas para facilitar a leitura
-  ordenarIndices() {
-
-  }
   pesquisarIndices() {
-
+    let listaIndices = $('<div>');
+    let indices = [];
+    this._listarIndices().each((indice) => {
+      indices.push(indice);
+    })
+    .then(() => {
+      indices.sort((a, b) => {
+        return a.valor > b.valor;
+      });
+      for (let i = 0; i < indices.length; i++) {
+        let linhaIndice = $('<div>');
+        linhaIndice.append(indices[i].valor);
+        listaIndices.append(linhaIndice);
+      }
+    });
+    return listaIndices;
   }
 }
