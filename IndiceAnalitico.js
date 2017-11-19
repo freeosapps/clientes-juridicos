@@ -157,7 +157,17 @@ class IndiceAnalitico {
             that._adicionarAssociacao(indice.id, idPagina);
             $.data(conteinerIndice, 'id', indice.id);
           } else {
-            that._alterarIndice(id, valor);
+            that._removerAssociacao(id, idPagina);
+            that._listarAssociacoes(id).first((associacao) => {
+              if (!associacao) {
+                that._removerIndice(id);
+              }
+              that._adicionarIndice(campoTexto.val())
+              .then((id) => {
+                that._adicionarAssociacao(id, idPagina);
+                $.data(conteinerIndice, 'id', id);
+              });
+            });
           }
         });
       } else {
@@ -210,7 +220,7 @@ class IndiceAnalitico {
       if (id) {
         that._removerAssociacao(id, idPagina);
         that._listarAssociacoes(id).first((associacao) => {
-          if (!associacao) {            
+          if (!associacao) {
             that._removerIndice(id);
           }
         });
