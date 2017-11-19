@@ -17,15 +17,13 @@ class Pasta {
         backgroundColor: 'cornflowerblue',
         fontWeight: 'bold',
         color: 'white',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        fontSize: '12pt'
       },
       menu: {
         top: 0,
         marginLeft: 25,
         padding: 0
-      },
-      criacaoPagina: {
-
       },
       voltar: {
         fontFamily: 'arial',
@@ -101,8 +99,6 @@ class Pasta {
       }
     });
 
-    let criacaoPagina = $('<div>')
-    .css(this.styles.criacaoPagina);
 
     let voltar = $('<li>')
     .css(this.styles.voltar)
@@ -114,6 +110,8 @@ class Pasta {
     let menu = $('<ul>')
     .css(this.styles.menu)
     .append(voltar);
+
+    let criacaoPagina = $('<div>');
 
     let criarPagina = $('<button>')
     .css(this.styles.botao)
