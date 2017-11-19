@@ -5,6 +5,21 @@ class Pasta {
       paginas: '++id'
     });
     this.db.open();
+    this.styles = {
+      criarPagina: {
+        display: 'inline-block',
+        borderStyle: 'double',
+        borderWidth: 6,
+        borderColor: 'white',
+        borderRadius: 25,
+        padding: 5,
+        fontFamily: 'arial',
+        backgroundColor: 'cornflowerblue',
+        fontWeight: 'bold',
+        color: 'white',
+        cursor: 'pointer'
+      }
+    };
   }
 
   mostrar() {
@@ -19,6 +34,7 @@ class Pasta {
     let indiceAnalitico = new IndiceAnalitico();
 
     let criarPagina = $('<button>');
+    criarPagina.css(this.styles.criarPagina);
     criarPagina.text('Criar página');
     criarPagina.on('click', () => {
       that.db.paginas.add({})

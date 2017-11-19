@@ -27,7 +27,7 @@
       this.db.version(1).stores({
         imagens: '++id,idPagina,dataUri',
         indices: '++id,valor',
-        associacoes: 'idIndice,idPagina',
+        associacoes: '++id,idIndice,idPagina',
         paginas: '++id'
       });
       this.db.open();

@@ -3,7 +3,7 @@ class IndiceAnalitico {
     this.db = new Dexie('ClientesJuridicos');
     this.db.version(1).stores({
       indices: '++id,valor',
-      associacoes: 'idIndice,idPagina'
+      associacoes: '++id,idIndice,idPagina'
     });
     this.db.open();
     this.styles = {
@@ -72,7 +72,8 @@ class IndiceAnalitico {
       linhaIndice: {
         fontFamily: 'arial',
         padding: 5,
-        color: 'gray'
+        color: 'gray',
+        marginLeft: 10
       },
       itemAssociacao: {
         color: 'cornflowerblue',
