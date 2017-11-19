@@ -214,7 +214,8 @@ class IndiceAnalitico {
       let id = $.data(conteinerIndice, 'id');
       if (id) {
         that._removerAssociacao(id, idPagina);
-        that._listarAssociacoes(id).first((associacao) => {
+        that._listarAssociacoes(id)
+        .first((associacao) => {
           if (!associacao) {
             that._removerIndice(id);
           }
@@ -228,11 +229,14 @@ class IndiceAnalitico {
     .attr('list', 'indices')
     .css(this.styles.campoTexto)
     .on('blur', () => {
-      campoTexto.val(campoTexto.val().replace(/\s+$/, ''));
+      campoTexto
+      .val(campoTexto.val().replace(/\s+$/, ''));
+
       that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
     })
     .on('keyup', () => {
-      campoTexto.val(campoTexto.val().replace(/^\s+/, ''));
+      campoTexto
+      .val(campoTexto.val().replace(/^\s+/, ''));
     });
 
     if (valor) {
@@ -240,11 +244,26 @@ class IndiceAnalitico {
     }
 
     let listaIndices = $('<datalist>')
-    listaIndices.prop('id', 'indices');
-    this._listarIndices().each((indice) => {
-      let opcao = $('<option>');
-      opcao.val(indice.valor);
-      listaIndices.append(opcao);
+    .prop('id', 'indices');
+
+    let indices = [];
+    this._listarIndices()
+    .each((indice) => {
+      indices.push(indice);
+    })
+    .then(() => {
+      indices
+      .sort((a, b) => {
+        a.valor > b.valor;
+      });
+      for (let i = 0; i < indices.length; i++) {
+
+        let opcao = $('<option>')
+        .val(indices[i].valor);
+
+        listaIndices
+        .append(opcao);
+      }
     });
 
     conteinerIndice.append(listaIndices)
@@ -332,7 +351,7 @@ class IndiceAnalitico {
     })
     .then(() => {
       indices.sort((a, b) => {
-        return a.valor > b.valor;
+        return a.valor.toUpperCase() > b.valor.toUpperCase();
       });
       for (let i = 0; i < indices.length; i++) {
 

@@ -159,10 +159,4 @@ class Pagina {
 
       return conteiner;
   }
-  mostrar() {
-
-  }
-  criarIndices() {
-
-  }
 }
