@@ -9,7 +9,6 @@ class IndiceAnalitico {
     this.styles = {
       fielsetIndices: {
         fontFamily: 'arial',
-        fontWeight: ' bold',
         margin: 5,
         color: 'dimgrey',
         borderRadius: 5,
@@ -30,6 +29,7 @@ class IndiceAnalitico {
         cursor: 'pointer'
       },
       textoLegendaFieldsetIndices: {
+        fontWeight: ' bold',
         color: 'gray'
       },
       iconeRemover: {
@@ -85,6 +85,12 @@ class IndiceAnalitico {
         marginBottom: 0
       }
     };
+  }
+
+  semIndices() {
+    return this._listarIndices().count((quantidade) => {
+      return quantidade == 0;
+    });
   }
 
   _adicionarIndice(valor) {
@@ -348,7 +354,7 @@ class IndiceAnalitico {
           itemAssociacao.on('click', () => {
             callback(associacao.idPagina);
           });
-          itemAssociacao.text(associacao.idPagina);
+          itemAssociacao.text('Pág. ' + associacao.idPagina);
 
           listaAssociacoes.append(itemAssociacao);
         }).then(() => {
