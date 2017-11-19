@@ -241,6 +241,7 @@ class IndiceAnalitico {
     let textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
 
     let idsIndices = [];
+
     let associacoes = this._listarAssociacoes(null, idPagina).each((associacao) => {
       idsIndices.push(associacao.idIndice);
     }).then(() => {

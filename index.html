@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/2.0.1/dexie.min.js"></script>
 
   <script src="IndiceAnalitico.js"></script>
+  <script src="Pasta.js"></script>
   <script src="Pagina.js"></script>
 
   <style>
@@ -26,15 +27,19 @@
       this.db.version(1).stores({
         imagens: '++id,idPagina,dataUri',
         indices: '++id,valor',
-        associacoes: 'idIndice,idPagina'
+        associacoes: 'idIndice,idPagina',
+        paginas: '++id'
       });
       this.db.open();
 
-      let pagina = new Pagina(1);
-      let indiceAnalitico = new IndiceAnalitico();
-      //$(document.body).append(indiceAnalitico.pesquisarIndices());
+      //let pagina = new Pagina(1);
+      //let indiceAnalitico = new IndiceAnalitico();
+      let pasta = new Pasta();
+      /*
       $(document.body).append(indiceAnalitico.construirIndices(1));
       $(document.body).append(pagina.construir());
+      */
+      $(document.body).append(pasta.mostrar());
     });
   </script>
 
