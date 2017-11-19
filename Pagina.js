@@ -53,6 +53,9 @@ class Pagina {
       },
       conteinerAnexarArquivos: {
         margin: 5
+      },
+      arquivo: {
+        display: 'block'
       }
     };
   }
@@ -96,6 +99,7 @@ class Pagina {
       var blob = new Blob([dataView], { type: mimeString });
       return blob;
   }
+
   _mostrarArquivo(nome, tipo, dataUri, id) {
 
     let conteinerArquivo = $('<div>')
@@ -111,19 +115,23 @@ class Pagina {
       this._removerArquivo(id);
     });
 
-    let arquivo = null;
-    if (tipo.startsWith('image/')) {
-      arquivo = $('<img>')
-      .prop('src', dataUri);
-    } else {
-      arquivo = $('<a>')
-      .attr('href', window.URL.createObjectURL(this._dataURItoBlob(dataUri)))
-      .attr('download', nome)
-      .text(nome);
-    }
-
     conteinerArquivo
     .append(iconeRemover)
+
+    if (tipo.startsWith('image/')) {
+      let imagem = $('<img>')
+      .prop('src', dataUri);
+
+      conteinerArquivo.append(imagem);
+    }
+
+    let arquivo = $('<a>')
+    .css(this.styles.arquivo)
+    .attr('href', window.URL.createObjectURL(this._dataURItoBlob(dataUri)))
+    .attr('download', nome)
+    .text(nome);
+
+    conteinerArquivo
     .append(arquivo);
 
     return conteinerArquivo;
