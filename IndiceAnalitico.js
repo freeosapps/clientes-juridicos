@@ -254,7 +254,7 @@ class IndiceAnalitico {
     .then(() => {
       indices
       .sort((a, b) => {
-        a.valor > b.valor;
+        return a.valor > b.valor;
       });
       for (let i = 0; i < indices.length; i++) {
 
