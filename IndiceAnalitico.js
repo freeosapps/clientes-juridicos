@@ -68,6 +68,17 @@ class IndiceAnalitico {
         fontStyle: 'italic',
         padding: 5,
         display: 'inline-block'
+      },
+      linhaIndice: {
+        fontFamily: 'arial',
+        padding: 5,
+        color: 'gray'
+      },
+      itemAssociacao: {
+        color: 'cornflowerblue',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+        listStyle: 'square'
       }
     };
   }
@@ -106,9 +117,13 @@ class IndiceAnalitico {
         idIndice: idIndice,
         idPagina: idPagina
       });
-    } else {
+    } else if (idPagina) {
       return this.db.associacoes.where({
         idPagina: idPagina
+      });
+    } else {
+      return this.db.associacoes.where({
+        idIndice: idIndice
       });
     }
   }
@@ -294,7 +309,9 @@ class IndiceAnalitico {
     return fielsetIndices;
   }
 
-  pesquisarIndices() {
+  pesquisarIndices(callback) {
+    let that = this;
+
     let listaIndices = $('<div>');
     let indices = [];
     this._listarIndices().each((indice) => {
@@ -305,9 +322,24 @@ class IndiceAnalitico {
         return a.valor > b.valor;
       });
       for (let i = 0; i < indices.length; i++) {
-        let linhaIndice = $('<div>');
-        linhaIndice.append(indices[i].valor);
-        listaIndices.append(linhaIndice);
+        let listaAssociacoes = $('<ul>');
+        that._listarAssociacoes(indices[i].id).each((associacao) => {
+          let itemAssociacao = $('<li>');
+          itemAssociacao.css(that.styles.itemAssociacao);
+          itemAssociacao.on('click', () => {
+            callback(associacao.idPagina);
+          });
+          itemAssociacao.text(associacao.idPagina);
+
+          listaAssociacoes.append(itemAssociacao);
+        }).then(() => {
+          let linhaIndice = $('<div>');
+          linhaIndice.css(that.styles.linhaIndice);
+          linhaIndice.append(indices[i].valor);
+          linhaIndice.append(listaAssociacoes);
+
+          listaIndices.append(linhaIndice);
+        });
       }
     });
     return listaIndices;

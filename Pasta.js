@@ -34,7 +34,15 @@ class Pasta {
     });
 
     listagemIndices.append(criarPagina);
-    listagemIndices.append(indiceAnalitico.pesquisarIndices());
+    listagemIndices.append(indiceAnalitico.pesquisarIndices((idPagina) => {
+      let pagina = new Pagina(idPagina);
+
+      criacaoPagina.append(indiceAnalitico.construirIndices(idPagina));
+      criacaoPagina.append(pagina.construir());
+
+      listagemIndices.hide();
+      criacaoPagina.show();
+    }));
 
     conteiner.append(listagemIndices);
     conteiner.append(criacaoPagina);
