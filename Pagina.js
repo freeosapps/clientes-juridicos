@@ -77,47 +77,44 @@ class Pagina {
   }
 
   _mostrarImagem(dataUri, id) {
-    let imagem = $('<img>');
 
-    let conteinerImagem = $('<div>');
-    conteinerImagem.css(this.styles.conteinerImagem);
+    let conteinerImagem = $('<div>')
+    .css(this.styles.conteinerImagem);
 
-    let iconeRemover = $('<div>');
-    iconeRemover.css(this.styles.iconeRemover);
-    iconeRemover.text('x');
-    iconeRemover.prop('title', 'Remover');
-    iconeRemover.prop('alt', 'Remover');
-    iconeRemover.on('click', () => {
+    let iconeRemover = $('<div>')
+    .css(this.styles.iconeRemover)
+    .text('x')
+    .prop('title', 'Remover')
+    .prop('alt', 'Remover')
+    .on('click', () => {
       conteinerImagem.remove();
       this._removerImagem(id);
     });
 
-    conteinerImagem.append(iconeRemover);
-    conteinerImagem.append(imagem);
+    let imagem = $('<img>')
+    .prop('src', dataUri);
 
-    imagem.prop('src', dataUri);
+    conteinerImagem
+    .append(iconeRemover)
+    .append(imagem);
 
     return conteinerImagem;
   }
 
   construir() {
-      let conteiner = $('<div>');
-      conteiner.css(this.styles.conteiner);
+    let that = this;
+
+      let conteiner = $('<div>')
+      .css(this.styles.conteiner);
 
       let conteinerImagens = $('<div>');
 
-      let campoArquivo = $('<input>');
-      campoArquivo.css(this.styles.campoArquivo);
-      campoArquivo.prop('type', 'file');
-      campoArquivo.prop('accept', 'image/*');
-      campoArquivo.prop('multiple', 'true');
-      let that = this;
-
-      this._listarImagens(this.id).each((dadosImagem) => {
-        conteinerImagens.append(that._mostrarImagem(dadosImagem.dataUri, dadosImagem.id));
-      });
-
-      campoArquivo.on('change', () => {
+      let campoArquivo = $('<input>')
+      .css(this.styles.campoArquivo)
+      .prop('type', 'file')
+      .prop('accept', 'image/*')
+      .prop('multiple', 'true')
+      .on('change', () => {
         for (let i = 0; i < campoArquivo[0].files.length; i++) {
           let arquivo = campoArquivo[0].files[i];
           let leitorArquivos = new FileReader();
@@ -142,17 +139,23 @@ class Pagina {
         }
         campoArquivo.val('');
       });
-      let anexarImagens = $('<label>');
-      anexarImagens.css(this.styles.anexarImagens);
-      anexarImagens.text('Anexar imagens');
-      anexarImagens.append(campoArquivo);
 
-      let conteinerAnexarImagens = $('<div>');
-      conteinerAnexarImagens.css(this.styles.conteinerAnexarImagens);
-      conteinerAnexarImagens.append(anexarImagens);
+      this._listarImagens(this.id).each((dadosImagem) => {
+        conteinerImagens.append(that._mostrarImagem(dadosImagem.dataUri, dadosImagem.id));
+      });
 
-      conteiner.append(conteinerAnexarImagens);
-      conteiner.append(conteinerImagens);
+      let anexarImagens = $('<label>')
+      .css(this.styles.anexarImagens)
+      .text('Anexar imagens')
+      .append(campoArquivo);
+
+      let conteinerAnexarImagens = $('<div>')
+      .css(this.styles.conteinerAnexarImagens)
+      .append(anexarImagens);
+
+      conteiner
+      .append(conteinerAnexarImagens)
+      .append(conteinerImagens);
 
       return conteiner;
   }

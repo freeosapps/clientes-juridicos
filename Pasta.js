@@ -29,7 +29,6 @@ class Pasta {
       },
       voltar: {
         fontFamily: 'arial',
-        fontWeight: 'bold',
         color: 'cornflowerblue',
         listStyle: 'square',
         cursor: 'pointer'
@@ -62,82 +61,91 @@ class Pasta {
     let conteiner = $('<div>');
 
     let conteinerListagemIndices = $('<div>');
+
     let conteinerCriacaoPagina = $('<div>');
 
-    let fieldsetIndiceAnalitico = $('<fieldset>');
-    fieldsetIndiceAnalitico.css(this.styles.fieldsetIndiceAnalitico);
+    let textoFieldsetIndiceAnalitico = $('<span>')
+    .css(this.styles.textoFieldsetIndiceAnalitico)
+    .text('Índice analítico');
 
-    let textoFieldsetIndiceAnalitico = $('<span>');
-    textoFieldsetIndiceAnalitico.css(this.styles.textoFieldsetIndiceAnalitico);
-    textoFieldsetIndiceAnalitico.text('Índice analítico');
-
-    let legendaIndiceAnalitico = $('<legend>');
-    legendaIndiceAnalitico.append(textoFieldsetIndiceAnalitico);
-
-    fieldsetIndiceAnalitico.append(legendaIndiceAnalitico);
+    let legendaIndiceAnalitico = $('<legend>')
+    .append(textoFieldsetIndiceAnalitico);
 
     let indiceAnalitico = new IndiceAnalitico();
 
+    let fieldsetIndiceAnalitico = $('<fieldset>')
+    .css(this.styles.fieldsetIndiceAnalitico)
+    .append(legendaIndiceAnalitico)
+    .append(indiceAnalitico.pesquisarIndices((idPagina) => {
+      let pagina = new Pagina(idPagina);
+
+      criacaoPagina
+      .append(menu)
+      .append(indiceAnalitico.construirIndices(idPagina))
+      .append(pagina.construir());
+
+      conteinerListagemIndices
+      .hide();
+
+      conteinerCriacaoPagina
+      .show();
+    }));
+
     indiceAnalitico.semIndices().then((semIndices) => {
       if (semIndices) {
-        let textoNenhumIndice = $('<span>');
-        textoNenhumIndice.css(this.styles.textoNenhumIndice);
-        textoNenhumIndice.text('Não há índices ainda.');
+        let textoNenhumIndice = $('<span>')
+        .css(this.styles.textoNenhumIndice)
+        .text('Não há índices ainda.');
+
         fieldsetIndiceAnalitico.append(textoNenhumIndice);
       }
     });
 
-    let listagemIndices = $('<div>');
+    let criacaoPagina = $('<div>')
+    .css(this.styles.criacaoPagina);
 
-    let criacaoPagina = $('<div>');
-    criacaoPagina.css(this.styles.criacaoPagina);
-
-    let voltar = $('<li>');
-    voltar.css(this.styles.voltar);
-    voltar.text('Voltar');
-    voltar.on('click', () => {
+    let voltar = $('<li>')
+    .css(this.styles.voltar)
+    .text('Voltar')
+    .on('click', () => {
       location.reload();
     });
 
-    let menu = $('<ul>');
-    menu.css(this.styles.menu);
-    menu.append(voltar);
+    let menu = $('<ul>')
+    .css(this.styles.menu)
+    .append(voltar);
 
-    let criarPagina = $('<button>');
-    criarPagina.css(this.styles.botao);
-    criarPagina.text('Criar página');
-    criarPagina.on('click', () => {
+    let criarPagina = $('<button>')
+    .css(this.styles.botao)
+    .text('Criar página')
+    .on('click', () => {
       that.db.paginas.add({})
       .then((idPagina) => {
         let pagina = new Pagina(idPagina);
 
-        criacaoPagina.append(menu);
-        criacaoPagina.append(indiceAnalitico.construirIndices(idPagina));
-        criacaoPagina.append(pagina.construir());
+        criacaoPagina
+        .append(menu)
+        .append(indiceAnalitico.construirIndices(idPagina))
+        .append(pagina.construir());
 
-        conteinerListagemIndices.hide();
-        conteinerCriacaoPagina.show();
+        conteinerListagemIndices
+        .hide();
+
+        conteinerCriacaoPagina
+        .show();
       });
     });
 
-    listagemIndices.append(criarPagina);
-    fieldsetIndiceAnalitico.append(indiceAnalitico.pesquisarIndices((idPagina) => {
-      let pagina = new Pagina(idPagina);
+    conteinerListagemIndices
+    .append(criarPagina)
+    .append(fieldsetIndiceAnalitico);
 
-      criacaoPagina.append(menu);
-      criacaoPagina.append(indiceAnalitico.construirIndices(idPagina));
-      criacaoPagina.append(pagina.construir());
+    conteinerCriacaoPagina
+    .append(criacaoPagina);
 
-      conteinerListagemIndices.hide();
-      conteinerCriacaoPagina.show();
-    }));
-
-    conteinerListagemIndices.append(criarPagina);
-    conteinerListagemIndices.append(fieldsetIndiceAnalitico);
-    conteinerCriacaoPagina.append(criacaoPagina);
-
-    conteiner.append(conteinerListagemIndices);
-    conteiner.append(conteinerCriacaoPagina);
+    conteiner
+    .append(conteinerListagemIndices)
+    .append(conteinerCriacaoPagina);
 
     return conteiner;
   }

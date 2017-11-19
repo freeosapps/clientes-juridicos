@@ -72,7 +72,6 @@ class IndiceAnalitico {
         fontFamily: 'arial',
         padding: 5,
         color: 'gray',
-        margin: 10,
         display: 'flex'
       },
       itemAssociacao: {
@@ -87,12 +86,6 @@ class IndiceAnalitico {
     };
   }
 
-  semIndices() {
-    return this._listarIndices().count((quantidade) => {
-      return quantidade == 0;
-    });
-  }
-
   _adicionarIndice(valor) {
     return this.db.indices.add({
       valor: valor
@@ -103,16 +96,12 @@ class IndiceAnalitico {
     return this.db.indices.where({id: id}).delete();
   }
 
-  _alterarIndice(id, valor) {
-    return this.db.indices.update(id, {valor: valor});
-  }
-
   _listarIndices(valor, ids) {
     if (valor) {
       return this.db.indices.where('valor').equalsIgnoreCase(valor);
     } else if (ids) {
-      let query = this.db.indices.where('id').equals('-1');
-      for (let i = 0; i < ids.length; i++) {
+      let query = this.db.indices.where('id').equals(ids[0]);
+      for (let i = 1; i < ids.length; i++) {
         query = query.or('id').equals(ids[i]);
       }
       return query;
@@ -212,15 +201,15 @@ class IndiceAnalitico {
   _construirConteinerDeIndice(idPagina, idIndice, valor, aoRemover) {
     let that = this;
 
-    let conteinerIndice = $('<span>');
-    conteinerIndice.css(this.styles.conteinerIndice);
+    let conteinerIndice = $('<span>')
+    .css(this.styles.conteinerIndice);
 
-    let iconeRemover = $('<span>');
-    iconeRemover.css(this.styles.iconeRemover);
-    iconeRemover.text('x');
-    iconeRemover.prop('title', 'Remover');
-    iconeRemover.prop('alt', 'Remover');
-    iconeRemover.on('click', () => {
+    let iconeRemover = $('<span>')
+    .css(this.styles.iconeRemover)
+    .text('x')
+    .prop('title', 'Remover')
+    .prop('alt', 'Remover')
+    .on('click', () => {
       conteinerIndice.remove();
       let id = $.data(conteinerIndice, 'id');
       if (id) {
@@ -234,17 +223,18 @@ class IndiceAnalitico {
       aoRemover();
     });
 
-    let campoTexto = $('<input>');
-    campoTexto.prop('type', 'text');
-    campoTexto.attr('list', 'indices');
-    campoTexto.css(this.styles.campoTexto);
-    campoTexto.on('blur', () => {
+    let campoTexto = $('<input>')
+    .prop('type', 'text')
+    .attr('list', 'indices')
+    .css(this.styles.campoTexto)
+    .on('blur', () => {
       campoTexto.val(campoTexto.val().replace(/\s+$/, ''));
       that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
-    });
-    campoTexto.on('keyup', () => {
+    })
+    .on('keyup', () => {
       campoTexto.val(campoTexto.val().replace(/^\s+/, ''));
     });
+
     if (valor) {
       campoTexto.val(valor);
     }
@@ -257,9 +247,9 @@ class IndiceAnalitico {
       listaIndices.append(opcao);
     });
 
-    conteinerIndice.append(listaIndices);
-    conteinerIndice.append(campoTexto);
-    conteinerIndice.append(iconeRemover);
+    conteinerIndice.append(listaIndices)
+    .append(campoTexto)
+    .append(iconeRemover);
 
     $.data(conteinerIndice, 'id', idIndice);
 
@@ -267,9 +257,9 @@ class IndiceAnalitico {
   }
 
   _construirTextoNenhumIndiceAdicionado() {
-    let textoNenhumIndiceAdicionado = $('<span>');
-    textoNenhumIndiceAdicionado.css(this.styles.textoNenhumIndiceAdicionado);
-    textoNenhumIndiceAdicionado.text('Nenhum índice adicionado.');
+    let textoNenhumIndiceAdicionado = $('<span>')
+    .css(this.styles.textoNenhumIndiceAdicionado)
+    .text('Nenhum índice adicionado.');
     return textoNenhumIndiceAdicionado;
   }
 
@@ -299,12 +289,12 @@ class IndiceAnalitico {
       }
     });
 
-    let botaoAdicionarIndice = $('<button>');
-    botaoAdicionarIndice.prop('title', 'Adicionar um índice');
-    botaoAdicionarIndice.prop('alt', 'Adicionar um índice');
-    botaoAdicionarIndice.css(this.styles.botaoAdicionarIndice);
-    botaoAdicionarIndice.text('+');
-    botaoAdicionarIndice.on('click', () => {
+    let botaoAdicionarIndice = $('<button>')
+    .prop('title', 'Adicionar um índice')
+    .prop('alt', 'Adicionar um índice')
+    .css(this.styles.botaoAdicionarIndice)
+    .text('+')
+    .on('click', () => {
       if (textoNenhumIndiceAdicionado) {
         textoNenhumIndiceAdicionado.remove();
       }
@@ -316,19 +306,18 @@ class IndiceAnalitico {
       }));
     });
 
-    let legendaFielsetIndices = $('<legend>');
+    let textoLegendaFieldsetIndices = $('<span>')
+    .append('Índices')
+    .css(this.styles.textoLegendaFieldsetIndices);
 
-    let textoLegendaFieldsetIndices = $('<span>');
-    textoLegendaFieldsetIndices.append('Índices');
-    textoLegendaFieldsetIndices.css(this.styles.textoLegendaFieldsetIndices);
+    let legendaFielsetIndices = $('<legend>')
+    .append(textoLegendaFieldsetIndices)
+    .append(botaoAdicionarIndice);
 
-    legendaFielsetIndices.append(textoLegendaFieldsetIndices);
-    legendaFielsetIndices.append(botaoAdicionarIndice);
-
-    let fielsetIndices = $('<fieldset>');
-    fielsetIndices.css(this.styles.fielsetIndices);
-    fielsetIndices.append(legendaFielsetIndices);
-    fielsetIndices.append(conteinerIndices);
+    let fielsetIndices = $('<fieldset>')
+    .css(this.styles.fielsetIndices)
+    .append(legendaFielsetIndices)
+    .append(conteinerIndices);
 
     return fielsetIndices;
   }
@@ -346,27 +335,36 @@ class IndiceAnalitico {
         return a.valor > b.valor;
       });
       for (let i = 0; i < indices.length; i++) {
-        let listaAssociacoes = $('<ul>');
-        listaAssociacoes.css(that.styles.listaAssociacoes);
+
+        let listaAssociacoes = $('<ul>')
+        .css(that.styles.listaAssociacoes);
+
         that._listarAssociacoes(indices[i].id).each((associacao) => {
-          let itemAssociacao = $('<li>');
-          itemAssociacao.css(that.styles.itemAssociacao);
-          itemAssociacao.on('click', () => {
+
+          let itemAssociacao = $('<li>')
+          .css(that.styles.itemAssociacao)
+          .text('Pág. ' + associacao.idPagina)
+          .on('click', () => {
             callback(associacao.idPagina);
           });
-          itemAssociacao.text('Pág. ' + associacao.idPagina);
 
           listaAssociacoes.append(itemAssociacao);
         }).then(() => {
-          let linhaIndice = $('<div>');
-          linhaIndice.css(that.styles.linhaIndice);
-          linhaIndice.append(indices[i].valor);
-          linhaIndice.append(listaAssociacoes);
+          let linhaIndice = $('<div>')
+          .css(that.styles.linhaIndice)
+          .append(indices[i].valor)
+          .append(listaAssociacoes);
 
           listaIndices.append(linhaIndice);
         });
       }
     });
     return listaIndices;
+  }
+
+  semIndices() {
+    return this._listarIndices().count((quantidade) => {
+      return quantidade == 0;
+    });
   }
 }
