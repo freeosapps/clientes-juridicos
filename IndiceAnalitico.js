@@ -231,7 +231,9 @@ class IndiceAnalitico {
     .css(this.styles.campoTexto)
     .on('blur', () => {
       campoTexto
-      .val(campoTexto.val().replace(/\s+$/, ''));
+      .val(campoTexto.val().replace(/\s+$/, ''))
+      .prop('title', campoTexto.val())
+      .prop('alt', campoTexto.val());
 
       that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
     })
@@ -241,7 +243,10 @@ class IndiceAnalitico {
     });
 
     if (valor) {
-      campoTexto.val(valor);
+      campoTexto
+      .val(valor)
+      .prop('title', campoTexto.val())
+      .prop('alt', campoTexto.val());
     }
 
     let listaIndices = $('<datalist>')
