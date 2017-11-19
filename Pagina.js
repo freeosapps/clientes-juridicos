@@ -2,7 +2,7 @@ class Pagina {
   constructor(id) {
     this.db = new Dexie('ClientesJuridicos');
     this.db.version(1).stores({
-      imagens: '++id,idPagina,dataUri'
+      arquivos: '++id,idPagina,nome,tipo,dataUri'
     });
     this.db.open();
     this.id = id;
@@ -10,7 +10,7 @@ class Pagina {
       campoArquivo: {
         display: 'none'
       },
-      anexarImagens: {
+      anexarArquivos: {
         display: 'inline-block',
         borderStyle: 'double',
         borderWidth: 6,
@@ -37,7 +37,7 @@ class Pagina {
         marginBottom: 5,
         cursor: 'pointer'
       },
-      conteinerImagem: {
+      conteinerArquivo: {
         padding: 5,
         borderStyle: 'dotted',
         borderWidth: 1,
@@ -51,35 +51,55 @@ class Pagina {
         display: 'flex',
         flexDirection: 'column'
       },
-      conteinerAnexarImagens: {
+      conteinerAnexarArquivos: {
         margin: 5
       }
     };
   }
 
-  _armazenarImagem(dataUri) {
-    return this.db.imagens.add({
+  _armazenarArquivo(tipo, nome, dataUri) {
+    return this.db.arquivos.add({
       idPagina: this.id,
-      dataUri: dataUri
+      dataUri: dataUri,
+      nome: nome,
+      tipo: tipo
     });
   }
 
-  _removerImagem(id) {
-    return this._obterImagem(id).delete();
+  _removerArquivo(id) {
+    return this._obterArquivo(id).delete();
   }
 
-  _obterImagem(id) {
-    return this.db.imagens.where({idPagina: this.id, id: id});
+  _obterArquivo(id) {
+    return this.db.arquivos.where({idPagina: this.id, id: id});
   }
 
-  _listarImagens() {
-    return this.db.imagens.where({idPagina: this.id});
+  _listarArquivos() {
+    return this.db.arquivos.where({idPagina: this.id});
   }
 
-  _mostrarImagem(dataUri, id) {
+  _dataURItoBlob(dataURI) {
+      // convert base64 to raw binary data held in a string
+      var byteString = atob(dataURI.split(',')[1]);
 
-    let conteinerImagem = $('<div>')
-    .css(this.styles.conteinerImagem);
+      // separate out the mime component
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+      // write the bytes of the string to an ArrayBuffer
+      var arrayBuffer = new ArrayBuffer(byteString.length);
+      var _ia = new Uint8Array(arrayBuffer);
+      for (var i = 0; i < byteString.length; i++) {
+          _ia[i] = byteString.charCodeAt(i);
+      }
+
+      var dataView = new DataView(arrayBuffer);
+      var blob = new Blob([dataView], { type: mimeString });
+      return blob;
+  }
+  _mostrarArquivo(nome, tipo, dataUri, id) {
+
+    let conteinerArquivo = $('<div>')
+    .css(this.styles.conteinerArquivo);
 
     let iconeRemover = $('<div>')
     .css(this.styles.iconeRemover)
@@ -87,18 +107,26 @@ class Pagina {
     .prop('title', 'Remover')
     .prop('alt', 'Remover')
     .on('click', () => {
-      conteinerImagem.remove();
-      this._removerImagem(id);
+      conteinerArquivo.remove();
+      this._removerArquivo(id);
     });
 
-    let imagem = $('<img>')
-    .prop('src', dataUri);
+    let arquivo = null;
+    if (tipo.startsWith('image/')) {
+      arquivo = $('<img>')
+      .prop('src', dataUri);
+    } else {
+      arquivo = $('<a>')
+      .attr('href', window.URL.createObjectURL(this._dataURItoBlob(dataUri)))
+      .attr('download', nome)
+      .text(nome);
+    }
 
-    conteinerImagem
+    conteinerArquivo
     .append(iconeRemover)
-    .append(imagem);
+    .append(arquivo);
 
-    return conteinerImagem;
+    return conteinerArquivo;
   }
 
   construir() {
@@ -107,12 +135,11 @@ class Pagina {
       let conteiner = $('<div>')
       .css(this.styles.conteiner);
 
-      let conteinerImagens = $('<div>');
+      let conteinerArquivos = $('<div>');
 
       let campoArquivo = $('<input>')
       .css(this.styles.campoArquivo)
       .prop('type', 'file')
-      .prop('accept', 'image/*')
       .prop('multiple', 'true')
       .on('change', () => {
         for (let i = 0; i < campoArquivo[0].files.length; i++) {
@@ -124,15 +151,15 @@ class Pagina {
             loading.prop('src', 'loading.gif');
 
             let conteinerLoading = $('<div>');
-            conteinerLoading.css(that.styles.conteinerImagem);
+            conteinerLoading.css(that.styles.conteinerArquivo);
             conteinerLoading.append(loading);
 
-            conteinerImagens.append(conteinerLoading);
+            conteinerArquivos.append(conteinerLoading);
 
-            that._armazenarImagem(data.target.result)
+            that._armazenarArquivo(arquivo.type, arquivo.name, data.target.result)
             .then((id) => {
               conteinerLoading.remove();
-              conteinerImagens.append(that._mostrarImagem(data.target.result, id));
+              conteinerArquivos.append(that._mostrarArquivo(arquivo.name, arquivo.type, data.target.result, id));
             });
           };
           leitorArquivos.readAsDataURL(arquivo);
@@ -140,22 +167,22 @@ class Pagina {
         campoArquivo.val('');
       });
 
-      this._listarImagens(this.id).each((dadosImagem) => {
-        conteinerImagens.append(that._mostrarImagem(dadosImagem.dataUri, dadosImagem.id));
+      this._listarArquivos(this.id).each((dadosArquivo) => {
+        conteinerArquivos.append(that._mostrarArquivo(dadosArquivo.nome, dadosArquivo.tipo, dadosArquivo.dataUri, dadosArquivo.id));
       });
 
-      let anexarImagens = $('<label>')
-      .css(this.styles.anexarImagens)
-      .text('Anexar imagens')
+      let anexarArquivos = $('<label>')
+      .css(this.styles.anexarArquivos)
+      .text('Anexar arquivos')
       .append(campoArquivo);
 
-      let conteinerAnexarImagens = $('<div>')
-      .css(this.styles.conteinerAnexarImagens)
-      .append(anexarImagens);
+      let conteinerAnexarArquivos = $('<div>')
+      .css(this.styles.conteinerAnexarArquivos)
+      .append(anexarArquivos);
 
       conteiner
-      .append(conteinerAnexarImagens)
-      .append(conteinerImagens);
+      .append(conteinerAnexarArquivos)
+      .append(conteinerArquivos);
 
       return conteiner;
   }

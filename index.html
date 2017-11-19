@@ -1,6 +1,7 @@
 <html>
 <head>
   <link rel="manifest" href="manifest.json"></link>
+  <link rel="manifest" href="manifest.appcache"></link>
   <meta charset="utf-8">
   <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -25,7 +26,7 @@
     $(() => {
       this.db = new Dexie('ClientesJuridicos');
       this.db.version(1).stores({
-        imagens: '++id,idPagina,dataUri',
+        arquivos: '++id,idPagina,nome,tipo,dataUri',
         indices: '++id,valor',
         associacoes: '++id,idIndice,idPagina',
         paginas: '++id'
