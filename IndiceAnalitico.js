@@ -14,8 +14,7 @@ class IndiceAnalitico {
         color: 'dimgrey',
         borderRadius: 5,
         borderStyle: 'dotted',
-        borderWidth: 1,
-        backgroundColor: 'white'
+        borderWidth: 1
       },
       botaoAdicionarIndice: {
         borderStyle: 'none',
@@ -73,13 +72,17 @@ class IndiceAnalitico {
         fontFamily: 'arial',
         padding: 5,
         color: 'gray',
-        marginLeft: 10
+        margin: 10,
+        display: 'flex'
       },
       itemAssociacao: {
         color: 'cornflowerblue',
         cursor: 'pointer',
-        textDecoration: 'underline',
         listStyle: 'square'
+      },
+      listaAssociacoes: {
+        marginTop: 0,
+        marginBottom: 0
       }
     };
   }
@@ -206,7 +209,11 @@ class IndiceAnalitico {
       let id = $.data(conteinerIndice, 'id');
       if (id) {
         that._removerAssociacao(id, idPagina);
-        that._removerIndice(id);
+        that._listarAssociacoes(id).first((associacao) => {
+          if (!associacao) {            
+            that._removerIndice(id);
+          }
+        });
       }
       aoRemover();
     });
@@ -324,6 +331,7 @@ class IndiceAnalitico {
       });
       for (let i = 0; i < indices.length; i++) {
         let listaAssociacoes = $('<ul>');
+        listaAssociacoes.css(that.styles.listaAssociacoes);
         that._listarAssociacoes(indices[i].id).each((associacao) => {
           let itemAssociacao = $('<li>');
           itemAssociacao.css(that.styles.itemAssociacao);

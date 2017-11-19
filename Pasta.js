@@ -6,7 +6,7 @@ class Pasta {
     });
     this.db.open();
     this.styles = {
-      criarPagina: {
+      botao: {
         display: 'inline-block',
         borderStyle: 'double',
         borderWidth: 6,
@@ -17,6 +17,23 @@ class Pasta {
         backgroundColor: 'cornflowerblue',
         fontWeight: 'bold',
         color: 'white',
+        cursor: 'pointer'
+      },
+      menu: {
+        position: 'fixed',
+        height: 50,
+        top: 0,
+        marginLeft: 25,
+        padding: 0
+      },
+      criacaoPagina: {
+        marginTop: 50
+      },
+      voltar: {
+        fontFamily: 'arial',
+        fontWeight: 'bold',
+        color: 'cornflowerblue',
+        listStyle: 'square',
         cursor: 'pointer'
       }
     };
@@ -30,17 +47,30 @@ class Pasta {
     let listagemIndices = $('<div>');
 
     let criacaoPagina = $('<div>');
+    criacaoPagina.css(this.styles.criacaoPagina);
 
     let indiceAnalitico = new IndiceAnalitico();
 
+    let voltar = $('<li>');
+    voltar.css(this.styles.voltar);
+    voltar.text('Voltar');
+    voltar.on('click', () => {
+      location.reload();
+    });
+
+    let menu = $('<ul>');
+    menu.css(this.styles.menu);
+    menu.append(voltar);
+
     let criarPagina = $('<button>');
-    criarPagina.css(this.styles.criarPagina);
+    criarPagina.css(this.styles.botao);
     criarPagina.text('Criar página');
     criarPagina.on('click', () => {
       that.db.paginas.add({})
       .then((idPagina) => {
         let pagina = new Pagina(idPagina);
 
+        criacaoPagina.append(menu);
         criacaoPagina.append(indiceAnalitico.construirIndices(idPagina));
         criacaoPagina.append(pagina.construir());
 
@@ -53,6 +83,7 @@ class Pasta {
     listagemIndices.append(indiceAnalitico.pesquisarIndices((idPagina) => {
       let pagina = new Pagina(idPagina);
 
+      criacaoPagina.append(menu);
       criacaoPagina.append(indiceAnalitico.construirIndices(idPagina));
       criacaoPagina.append(pagina.construir());
 

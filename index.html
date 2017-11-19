@@ -14,7 +14,7 @@
 
   <style>
     body {
-      /*background-color: lavender;*/
+      background-color: white;
     }
     button {
       outline: 0;
@@ -32,13 +32,8 @@
       });
       this.db.open();
 
-      //let pagina = new Pagina(1);
-      //let indiceAnalitico = new IndiceAnalitico();
       let pasta = new Pasta();
-      /*
-      $(document.body).append(indiceAnalitico.construirIndices(1));
-      $(document.body).append(pagina.construir());
-      */
+
       $(document.body).append(pasta.mostrar());
     });
   </script>
