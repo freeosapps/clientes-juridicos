@@ -53,15 +53,15 @@ class IndiceAnalitico {
       conteinerIndice: {
         marginRight: 10
       },
-      campoTexto: {
+      campoTextoIndice: {
         padding: 5,
         borderStyle: 'solid',
         borderWidth: 2,
         borderColor: 'cornflowerblue',
         backgroundColor: 'aliceblue',
-        margin: 5,
+        marginRight: 5,
         height: 30,
-        borderRadius: 5
+        borderRadius: '0 5px 5px 0';
       },
       textoNenhumIndiceAdicionado: {
         fontWeight: 'normal',
@@ -139,10 +139,10 @@ class IndiceAnalitico {
     return this.db.associacoes.where({idIndice: idIndice, idPagina: idPagina}).delete();
   }
 
-  _persistirAlteracoes(conteinerIndice, campoTexto, idPagina) {
+  _persistirAlteracoes(conteinerIndice, campoTextoIndice, idPagina) {
     let that = this;
     let id = $.data(conteinerIndice, 'id');
-    let valor = campoTexto.val();
+    let valor = campoTextoIndice.val();
     if (id) {
       if (valor.trim()) {
         that._listarIndices(valor)
@@ -157,7 +157,7 @@ class IndiceAnalitico {
             that._listarAssociacoes(id).first((associacao) => {
               if (!associacao) {
                 that._removerIndice(id);
-                that._adicionarIndice(campoTexto.val())
+                that._adicionarIndice(campoTextoIndice.val())
                 .then((id) => {
                   that._adicionarAssociacao(id, idPagina);
                   $.data(conteinerIndice, 'id', id);
@@ -227,28 +227,28 @@ class IndiceAnalitico {
       aoRemover();
     });
 
-    let campoTexto = $('<input>')
+    let campoTextoIndice = $('<input>')
     .prop('type', 'text')
     .attr('list', 'indices')
-    .css(this.styles.campoTexto)
+    .css(this.styles.campoTextoIndice)
     .on('blur', () => {
-      campoTexto
-      .val(campoTexto.val().replace(/\s+$/, ''))
-      .prop('title', campoTexto.val())
-      .prop('alt', campoTexto.val());
+      campoTextoIndice
+      .val(campoTextoIndice.val().replace(/\s+$/, ''))
+      .prop('title', campoTextoIndice.val())
+      .prop('alt', campoTextoIndice.val());
 
-      that._persistirAlteracoes(conteinerIndice, campoTexto, idPagina);
+      that._persistirAlteracoes(conteinerIndice, campoTextoIndice, idPagina);
     })
     .on('keyup', () => {
-      campoTexto
-      .val(campoTexto.val().replace(/^\s+/, ''));
+      campoTextoIndice
+      .val(campoTextoIndice.val().replace(/^\s+/, ''));
     });
 
     if (valor) {
-      campoTexto
+      campoTextoIndice
       .val(valor)
-      .prop('title', campoTexto.val())
-      .prop('alt', campoTexto.val());
+      .prop('title', campoTextoIndice.val())
+      .prop('alt', campoTextoIndice.val());
     }
 
     let listaIndices = $('<datalist>')
@@ -272,7 +272,7 @@ class IndiceAnalitico {
     });
 
     conteinerIndice.append(listaIndices)
-    .append(campoTexto)
+    .append(campoTextoIndice)
     .append(iconeRemover);
 
     $.data(conteinerIndice, 'id', idIndice);
