@@ -61,7 +61,7 @@ class IndiceAnalitico {
         backgroundColor: 'aliceblue',
         marginRight: 5,
         height: 30,
-        borderRadius: '0 5px 5px 0';
+        borderRadius: '0 5px 5px 0'
       },
       textoNenhumIndiceAdicionado: {
         fontWeight: 'normal',
