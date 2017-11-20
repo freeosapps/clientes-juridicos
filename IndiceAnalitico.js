@@ -345,9 +345,13 @@ class IndiceAnalitico {
         campoSelecaoCategoria
         .append(opcao);
       }
-      
-      campoSelecaoCategoria
-      .val(idCategoria);
+      if (idCategoria) {
+        campoSelecaoCategoria
+        .val(idCategoria);
+      } else {
+        campoSelecaoCategoria
+        .val(categorias[0].id);
+      }
     });
 
     let campoTextoIndice = $('<input>')
