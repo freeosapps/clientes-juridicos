@@ -157,12 +157,14 @@ class IndiceAnalitico {
             that._listarAssociacoes(id).first((associacao) => {
               if (!associacao) {
                 that._removerIndice(id);
-              }
-              that._adicionarIndice(campoTexto.val())
-              .then((id) => {
+                that._adicionarIndice(campoTexto.val())
+                .then((id) => {
+                  that._adicionarAssociacao(id, idPagina);
+                  $.data(conteinerIndice, 'id', id);
+                });
+              } else {
                 that._adicionarAssociacao(id, idPagina);
-                $.data(conteinerIndice, 'id', id);
-              });
+              }
             });
           }
         });
@@ -284,7 +286,7 @@ class IndiceAnalitico {
     .text('Nenhum índice adicionado.');
     return textoNenhumIndiceAdicionado;
   }
-  
+
   _ordenarIndices(indices) {
     return indices
     .sort((a, b) => {
