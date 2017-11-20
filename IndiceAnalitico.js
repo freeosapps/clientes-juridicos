@@ -2,10 +2,12 @@ class IndiceAnalitico {
   constructor() {
     this.db = new Dexie('ClientesJuridicos');
     this.db.version(1).stores({
-      indices: '++id,valor',
-      associacoes: '++id,idIndice,idPagina'
+      indices: '++id,idCategoria,valor',
+      associacoesIndicePagina: '++id,idIndice,idPagina',
+      categorias: '++id,valor'
     });
     this.db.open();
+    this._adicionarCategorias();
     this.styles = {
       fielsetIndices: {
         fontFamily: 'arial',
@@ -51,17 +53,32 @@ class IndiceAnalitico {
         left: -4
       },
       conteinerIndice: {
-        marginRight: 10
+        marginRight: 10,
+        marginTop: 5,
+        marginBottom: 5,
+        display: 'inline-block'
       },
       campoTextoIndice: {
         padding: 5,
         borderStyle: 'solid',
         borderWidth: 2,
         borderColor: 'cornflowerblue',
-        backgroundColor: 'aliceblue',
+        backgroundColor: 'white',
         marginRight: 5,
         height: 30,
         borderRadius: '0 5px 5px 0'
+      },
+      campoSelecaoCategoria: {
+        padding: 5,
+        borderStyle: 'solid',
+        borderWidth: 2,
+        borderColor: 'cornflowerblue',
+        backgroundColor: 'cornflowerblue',
+        color: 'white',
+        marginRight: 0,
+        height: 30,
+        borderRadius: '5px 0 0 5px',
+        fontWeight: 'normal'
       },
       textoNenhumIndiceAdicionado: {
         fontWeight: 'normal',
@@ -80,16 +97,71 @@ class IndiceAnalitico {
         cursor: 'pointer',
         listStyle: 'square'
       },
-      listaAssociacoes: {
+      listaAssociacoesIndicePagina: {
         marginTop: 0,
         marginBottom: 0
+      },
+      valorCategoria: {
+        fontWeight: 'bold'
       }
     };
   }
 
-  _adicionarIndice(valor) {
+  _listarCategorias() {
+    return this.db.categorias;
+  }
+
+  _adicionarCategorias() {
+    return this._listarCategorias().count((quantidade) => {
+      if (quantidade == 0) {
+        this.db.categorias
+        .add({
+          valor: 'Nome do cliente'
+        });
+        this.db.categorias
+        .add({
+          valor: 'RG do cliente'
+        });
+        this.db.categorias
+        .add({
+          valor: 'CPF do cliente'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Endereço do cliente'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Situação do processo'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Ação'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Natureza do processo'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Fase do processo'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Advogado responsável'
+        });
+        this.db.categorias
+        .add({
+          valor: 'Posição do cliente'
+        });
+      }
+    });
+  }
+
+  _adicionarIndice(idCategoria, valor) {
     return this.db.indices.add({
-      valor: valor
+      valor: valor,
+      idCategoria: idCategoria
     });
   }
 
@@ -111,37 +183,42 @@ class IndiceAnalitico {
     }
   }
 
-  _listarAssociacoes(idIndice, idPagina) {
+  _listarAssociacoesIndicePagina(idIndice, idPagina) {
     if (idIndice && idPagina) {
-      return this.db.associacoes.where({
+      return this.db.associacoesIndicePagina.where({
         idIndice: idIndice,
         idPagina: idPagina
       });
     } else if (idPagina) {
-      return this.db.associacoes.where({
+      return this.db.associacoesIndicePagina.where({
         idPagina: idPagina
       });
     } else {
-      return this.db.associacoes.where({
+      return this.db.associacoesIndicePagina.where({
         idIndice: idIndice
       });
     }
   }
 
   _adicionarAssociacao(idIndice, idPagina) {
-    return this.db.associacoes.add({
+    return this.db.associacoesIndicePagina.add({
       idIndice: idIndice,
       idPagina: idPagina
     })
   }
 
   _removerAssociacao(idIndice, idPagina) {
-    return this.db.associacoes.where({idIndice: idIndice, idPagina: idPagina}).delete();
+    return this.db.associacoesIndicePagina.where({idIndice: idIndice, idPagina: idPagina}).delete();
   }
 
-  _persistirAlteracoes(conteinerIndice, campoTextoIndice, idPagina) {
+  _alterarIndice(idIndice, dadosAlteracao) {
+    return this.db.indices.update(idIndice, dadosAlteracao);
+  }
+
+  _persistirAlteracoes(campoSelecaoCategoria, campoTextoIndice, idPagina) {
     let that = this;
-    let id = $.data(conteinerIndice, 'id');
+    let id = $.data(campoTextoIndice, 'id');
+    let idCategoria = parseInt(campoSelecaoCategoria.val(), 10);
     let valor = campoTextoIndice.val();
     if (id) {
       if (valor.trim()) {
@@ -151,16 +228,16 @@ class IndiceAnalitico {
             that._removerAssociacao(id, idPagina);
             that._removerIndice(id);
             that._adicionarAssociacao(indice.id, idPagina);
-            $.data(conteinerIndice, 'id', indice.id);
+            $.data(campoTextoIndice, 'id', indice.id);
           } else {
             that._removerAssociacao(id, idPagina);
-            that._listarAssociacoes(id).first((associacao) => {
+            that._listarAssociacoesIndicePagina(id).first((associacao) => {
               if (!associacao) {
                 that._removerIndice(id);
-                that._adicionarIndice(campoTextoIndice.val())
+                that._adicionarIndice(idCategoria, valor)
                 .then((id) => {
                   that._adicionarAssociacao(id, idPagina);
-                  $.data(conteinerIndice, 'id', id);
+                  $.data(campoTextoIndice, 'id', id);
                 });
               } else {
                 that._adicionarAssociacao(id, idPagina);
@@ -171,28 +248,30 @@ class IndiceAnalitico {
       } else {
         that._removerAssociacao(id, idPagina);
         that._removerIndice(id);
-        $.data(conteinerIndice, 'id', '');
+        $.data(campoTextoIndice, 'id', '');
       }
     } else {
       if (valor.trim()) {
         that._listarIndices(valor)
         .first((indice) => {
           if (indice) {
-            that._listarAssociacoes(indice.id, idPagina)
+            that._alterarIndice(indice.id, {idCategoria: idCategoria});
+
+            that._listarAssociacoesIndicePagina(indice.id, idPagina)
             .first((associacao) => {
               if (!associacao) {
                 that._adicionarAssociacao(indice.id, idPagina)
                 .then((id) => {
-                  $.data(conteinerIndice, 'id', id);
+                  $.data(campoTextoIndice, 'id', id);
                 });
               } else {
-                $.data(conteinerIndice, 'id', indice.id);
+                $.data(campoTextoIndice, 'id', indice.id);
               }
             });
           } else {
-            that._adicionarIndice(valor)
+            that._adicionarIndice(idCategoria, valor)
             .then((id) => {
-              $.data(conteinerIndice, 'id', id);
+              $.data(campoTextoIndice, 'id', id);
               that._adicionarAssociacao(id, idPagina);
             });
           }
@@ -201,10 +280,10 @@ class IndiceAnalitico {
     }
   }
 
-  _construirConteinerDeIndice(idPagina, idIndice, valor, aoRemover) {
+  _construirConteinerDeIndice(categorias, idCategoria, idPagina, idIndice, valor, aoRemover) {
     let that = this;
 
-    let conteinerIndice = $('<span>')
+    let conteinerIndice = $('<div>')
     .css(this.styles.conteinerIndice);
 
     let iconeRemover = $('<span>')
@@ -217,7 +296,7 @@ class IndiceAnalitico {
       let id = $.data(conteinerIndice, 'id');
       if (id) {
         that._removerAssociacao(id, idPagina);
-        that._listarAssociacoes(id)
+        that._listarAssociacoesIndicePagina(id)
         .first((associacao) => {
           if (!associacao) {
             that._removerIndice(id);
@@ -226,6 +305,29 @@ class IndiceAnalitico {
       }
       aoRemover();
     });
+
+    let campoSelecaoCategoria = $('<select>')
+    .css(this.styles.campoSelecaoCategoria)
+    .on('change', () => {
+      campoSelecaoCategoria
+      .val(campoSelecaoCategoria.val().replace(/\s+$/, ''))
+      .prop('title', campoSelecaoCategoria.text())
+      .prop('alt', campoSelecaoCategoria.text());
+
+      that._persistirAlteracoes(campoSelecaoCategoria, campoTextoIndice, idPagina);
+    });
+
+    for (let i = 0; i < categorias.length; i++) {
+      let opcao = $('<option>')
+      .prop('value', categorias[i].id)
+      .text(categorias[i].valor);
+
+      campoSelecaoCategoria
+      .append(opcao);
+    }
+
+    campoSelecaoCategoria
+    .val(idCategoria);
 
     let campoTextoIndice = $('<input>')
     .prop('type', 'text')
@@ -237,7 +339,7 @@ class IndiceAnalitico {
       .prop('title', campoTextoIndice.val())
       .prop('alt', campoTextoIndice.val());
 
-      that._persistirAlteracoes(conteinerIndice, campoTextoIndice, idPagina);
+      that._persistirAlteracoes(campoSelecaoCategoria, campoTextoIndice, idPagina);
     })
     .on('keyup', () => {
       campoTextoIndice
@@ -272,6 +374,7 @@ class IndiceAnalitico {
     });
 
     conteinerIndice.append(listaIndices)
+    .append(campoSelecaoCategoria)
     .append(campoTextoIndice)
     .append(iconeRemover);
 
@@ -302,22 +405,32 @@ class IndiceAnalitico {
 
     let idsIndices = [];
 
-    let associacoes = this._listarAssociacoes(null, idPagina).each((associacao) => {
+    this._listarAssociacoesIndicePagina(null, idPagina)
+    .each((associacao) => {
       idsIndices.push(associacao.idIndice);
-    }).then(() => {
-      if (idsIndices.length > 0) {
-        let query = that._listarIndices(null, idsIndices).each((indice) => {
-          conteinerIndices.append(that._construirConteinerDeIndice(idPagina, indice.id, indice.valor, () => {
-            if (conteinerIndices.children().length == 0) {
-              textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
-              conteinerIndices.append(textoNenhumIndiceAdicionado);
-            }
-          }));
-        });
-      } else {
-        textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
-        conteinerIndices.append(textoNenhumIndiceAdicionado);
-      }
+    })
+    .then(() => {
+      let categorias = [];
+      that._listarCategorias()
+      .each((categoria) => {
+        categorias.push(categoria);
+      })
+      .then(() => {
+        if (idsIndices.length > 0) {
+          let query = that._listarIndices(null, idsIndices)
+          .each((indice) => {
+            conteinerIndices.append(that._construirConteinerDeIndice(categorias, indice.idCategoria, idPagina, indice.id, indice.valor, () => {
+              if (conteinerIndices.children().length == 0) {
+                textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
+                conteinerIndices.append(textoNenhumIndiceAdicionado);
+              }
+            }));
+          });
+        } else {
+          textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
+          conteinerIndices.append(textoNenhumIndiceAdicionado);
+        }
+      });
     });
 
     let botaoAdicionarIndice = $('<button>')
@@ -329,12 +442,19 @@ class IndiceAnalitico {
       if (textoNenhumIndiceAdicionado) {
         textoNenhumIndiceAdicionado.remove();
       }
-      conteinerIndices.append(that._construirConteinerDeIndice(idPagina, null, null, () => {
-        if (conteinerIndices.children().length == 0) {
-          textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
-          conteinerIndices.append(textoNenhumIndiceAdicionado);
-        }
-      }));
+      let categorias = [];
+      that._listarCategorias()
+      .each((categoria) => {
+        categorias.push(categoria);
+      })
+      .then(() => {
+        conteinerIndices.append(that._construirConteinerDeIndice(categorias, categorias[0].id, idPagina, null, null, () => {
+          if (conteinerIndices.children().length == 0) {
+            textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
+            conteinerIndices.append(textoNenhumIndiceAdicionado);
+          }
+        }));
+      });
     });
 
     let textoLegendaFieldsetIndices = $('<span>')
@@ -365,10 +485,10 @@ class IndiceAnalitico {
       indices = that._ordenarIndices(indices);
       for (let i = 0; i < indices.length; i++) {
 
-        let listaAssociacoes = $('<ul>')
-        .css(that.styles.listaAssociacoes);
+        let listaAssociacoesIndicePagina = $('<ul>')
+        .css(that.styles.listaAssociacoesIndicePagina);
 
-        that._listarAssociacoes(indices[i].id).each((associacao) => {
+        that._listarAssociacoesIndicePagina(indices[i].id).each((associacao) => {
 
           let itemAssociacao = $('<li>')
           .text('Pág. ' + associacao.idPagina)
@@ -377,14 +497,24 @@ class IndiceAnalitico {
             aoEscolherPagina(associacao.idPagina);
           });
 
-          listaAssociacoes.append(itemAssociacao);
+          listaAssociacoesIndicePagina.append(itemAssociacao);
         }).then(() => {
-          let linhaIndice = $('<div>')
-          .css(that.styles.linhaIndice)
-          .append(indices[i].valor)
-          .append(listaAssociacoes);
+          that._listarCategorias().get(indices[i].idCategoria, (categoria) => {
+            let valorCategoria = $('<span>')
+            .css(that.styles.valorCategoria)
+            .text(categoria.valor + ':')
+            .append('&nbsp;');
 
-          listaIndices.append(linhaIndice);
+
+            let linhaIndice = $('<div>')
+            .css(that.styles.linhaIndice)
+            .append(valorCategoria)
+            .append(indices[i].valor)
+            .append(listaAssociacoesIndicePagina);
+
+            listaIndices.append(linhaIndice);
+          });
+
         });
       }
     });
