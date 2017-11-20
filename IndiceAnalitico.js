@@ -63,7 +63,7 @@ class IndiceAnalitico {
         borderStyle: 'solid',
         borderWidth: 2,
         borderColor: 'cornflowerblue',
-        backgroundColor: 'white',
+        backgroundColor: 'aliceblue',
         marginRight: 5,
         height: 30,
         borderRadius: '0 5px 5px 0'
@@ -102,7 +102,11 @@ class IndiceAnalitico {
         marginBottom: 0
       },
       valorCategoria: {
-        fontWeight: 'bold'
+        color: 'darkgray',
+        fontSize: '10pt',
+        marginTop: 10,
+        marginBottom: 5,
+        display: 'block'
       }
     };
   }
@@ -534,8 +538,7 @@ class IndiceAnalitico {
                   if (indices.length > 0) {
                     let valorCategoria = $('<span>')
                     .css(that.styles.valorCategoria)
-                    .text(categoria.valor + ':')
-                    .append('&nbsp;');
+                    .text(categoria.valor);
 
                     listaIndices.append(valorCategoria);
                   }

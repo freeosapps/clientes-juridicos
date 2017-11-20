@@ -15,7 +15,7 @@ class Pagina {
         borderStyle: 'double',
         borderWidth: 6,
         borderColor: 'white',
-        borderRadius: 25,
+        borderRadius: 5,
         padding: 5,
         fontFamily: 'arial',
         backgroundColor: 'cornflowerblue',
@@ -42,7 +42,7 @@ class Pagina {
         borderStyle: 'dotted',
         borderWidth: 1,
         borderColor: 'gray',
-        borderRadius: 15,
+        borderRadius: 5,
         textAlign: 'center',
         margin: 5,
         backgroundColor: 'white'

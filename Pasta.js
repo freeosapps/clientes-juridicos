@@ -11,7 +11,7 @@ class Pasta {
         borderStyle: 'double',
         borderWidth: 6,
         borderColor: 'white',
-        borderRadius: 25,
+        borderRadius: 5,
         padding: 5,
         fontFamily: 'arial',
         backgroundColor: 'cornflowerblue',
