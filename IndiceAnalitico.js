@@ -258,10 +258,7 @@ class IndiceAnalitico {
       indices.push(indice);
     })
     .then(() => {
-      indices
-      .sort((a, b) => {
-        return a.valor.toUpperCase() > b.valor.toUpperCase();
-      });
+      indices = that._ordenarIndices(indices);
       for (let i = 0; i < indices.length; i++) {
 
         let opcao = $('<option>')
@@ -286,6 +283,13 @@ class IndiceAnalitico {
     .css(this.styles.textoNenhumIndiceAdicionado)
     .text('Nenhum índice adicionado.');
     return textoNenhumIndiceAdicionado;
+  }
+  
+  _ordenarIndices(indices) {
+    return indices
+    .sort((a, b) => {
+      return a.valor.toUpperCase() > b.valor.toUpperCase();
+    });
   }
 
   construirIndices(idPagina) {
@@ -315,10 +319,10 @@ class IndiceAnalitico {
     });
 
     let botaoAdicionarIndice = $('<button>')
+    .text('+')
     .prop('title', 'Adicionar um índice')
     .prop('alt', 'Adicionar um índice')
     .css(this.styles.botaoAdicionarIndice)
-    .text('+')
     .on('click', () => {
       if (textoNenhumIndiceAdicionado) {
         textoNenhumIndiceAdicionado.remove();
@@ -347,7 +351,7 @@ class IndiceAnalitico {
     return fielsetIndices;
   }
 
-  pesquisarIndices(callback) {
+  pesquisarIndices(aoEscolherPagina) {
     let that = this;
 
     let listaIndices = $('<div>');
@@ -356,9 +360,7 @@ class IndiceAnalitico {
       indices.push(indice);
     })
     .then(() => {
-      indices.sort((a, b) => {
-        return a.valor.toUpperCase() > b.valor.toUpperCase();
-      });
+      indices = that._ordenarIndices(indices);
       for (let i = 0; i < indices.length; i++) {
 
         let listaAssociacoes = $('<ul>')
@@ -367,10 +369,10 @@ class IndiceAnalitico {
         that._listarAssociacoes(indices[i].id).each((associacao) => {
 
           let itemAssociacao = $('<li>')
-          .css(that.styles.itemAssociacao)
           .text('Pág. ' + associacao.idPagina)
+          .css(that.styles.itemAssociacao)
           .on('click', () => {
-            callback(associacao.idPagina);
+            aoEscolherPagina(associacao.idPagina);
           });
 
           listaAssociacoes.append(itemAssociacao);
