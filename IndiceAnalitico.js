@@ -294,7 +294,7 @@ class IndiceAnalitico {
     }
   }
 
-  _construirConteinerDeIndice(categorias, idCategoria, idPagina, idIndice, valor, aoRemover) {
+  _construirConteinerDeIndice(idCategoria, idPagina, idIndice, valor, aoRemover) {
     let that = this;
 
     let conteinerIndice = $('<div>')
@@ -331,17 +331,24 @@ class IndiceAnalitico {
       that._persistirAlteracoes(campoSelecaoCategoria, campoTextoIndice, idPagina);
     });
 
-    for (let i = 0; i < categorias.length; i++) {
-      let opcao = $('<option>')
-      .prop('value', categorias[i].id)
-      .text(categorias[i].valor);
+    let categorias = [];
+    that._listarCategorias()
+    .each((categoria) => {
+      categorias.push(categoria);
+    })
+    .then(() => {
+      for (let i = 0; i < categorias.length; i++) {
+        let opcao = $('<option>')
+        .prop('value', categorias[i].id)
+        .text(categorias[i].valor);
 
+        campoSelecaoCategoria
+        .append(opcao);
+      }
+      
       campoSelecaoCategoria
-      .append(opcao);
-    }
-
-    campoSelecaoCategoria
-    .val(idCategoria);
+      .val(idCategoria);
+    });
 
     let campoTextoIndice = $('<input>')
     .prop('type', 'text')
@@ -431,16 +438,11 @@ class IndiceAnalitico {
       idsIndices.push(associacao.idIndice);
     })
     .then(() => {
-      let categorias = [];
-      that._listarCategorias()
-      .each((categoria) => {
-        categorias.push(categoria);
-      })
-      .then(() => {
+      this.db.transaction('rw', this.db.categorias, this.db.indices, this.db.associacoesIndicePagina, async () => {
         if (idsIndices.length > 0) {
           let query = that._listarIndices(null, idsIndices)
           .each((indice) => {
-            conteinerIndices.append(that._construirConteinerDeIndice(categorias, indice.idCategoria, idPagina, indice.id, indice.valor, () => {
+            conteinerIndices.append(that._construirConteinerDeIndice(indice.idCategoria, idPagina, indice.id, indice.valor, () => {
               if (conteinerIndices.children().length == 0) {
                 textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
                 conteinerIndices.append(textoNenhumIndiceAdicionado);
@@ -463,19 +465,13 @@ class IndiceAnalitico {
       if (textoNenhumIndiceAdicionado) {
         textoNenhumIndiceAdicionado.remove();
       }
-      let categorias = [];
-      that._listarCategorias()
-      .each((categoria) => {
-        categorias.push(categoria);
-      })
-      .then(() => {
-        conteinerIndices.append(that._construirConteinerDeIndice(categorias, categorias[0].id, idPagina, null, null, () => {
-          if (conteinerIndices.children().length == 0) {
-            textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
-            conteinerIndices.append(textoNenhumIndiceAdicionado);
-          }
-        }));
-      });
+
+      conteinerIndices.append(that._construirConteinerDeIndice(null, idPagina, null, null, () => {
+        if (conteinerIndices.children().length == 0) {
+          textoNenhumIndiceAdicionado = this._construirTextoNenhumIndiceAdicionado();
+          conteinerIndices.append(textoNenhumIndiceAdicionado);
+        }
+      }));
     });
 
     let textoLegendaFieldsetIndices = $('<span>')
