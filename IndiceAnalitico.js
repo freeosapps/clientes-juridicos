@@ -418,14 +418,26 @@ class IndiceAnalitico {
   _ordenarIndices(indices) {
     return indices
     .sort((a, b) => {
-      return a.valor.toUpperCase() > b.valor.toUpperCase();
+      if (a.valor.toUpperCase() > b.valor.toUpperCase()) {
+        return 1;
+      } else if (a.valor.toUpperCase() < b.valor.toUpperCase()) {
+        return -1;
+      } else {
+        return 0;
+      }
     });
   }
 
   _ordenarCategorias(categorias) {
     return categorias
     .sort((a, b) => {
-      return a.valor.toUpperCase() > b.valor.toUpperCase();
+      if (a.valor.toUpperCase() > b.valor.toUpperCase()) {
+        return 1;
+      } else if (a.valor.toUpperCase() < b.valor.toUpperCase()) {
+        return -1;
+      } else {
+        return 0;
+      }
     });
   }
 
@@ -498,7 +510,7 @@ class IndiceAnalitico {
     let that = this;
 
     let listaIndices = $('<div>');
-    this.db.transaction('r', this.db.categorias, this.db.indices, this.db.associacoesIndicePagina, async () => {
+    this.db.transaction('r', this.db.categorias, this.db.indices, this.db.associacoesIndicePagina, () => {
       let categorias = [];
       this._listarCategorias().each((categoria) => {
         categorias.push(categoria);
@@ -517,12 +529,29 @@ class IndiceAnalitico {
           .then(() => {
             indices = that._ordenarIndices(indices);
 
-            for (let i = 0; i < indices.length; i++) {
+            for (let j = 0; j < indices.length; j++) {
 
               let listaAssociacoesIndicePagina = $('<ul>')
               .css(that.styles.listaAssociacoesIndicePagina);
 
-              that._listarAssociacoesIndicePagina(indices[i].id).each((associacao) => {
+              if (j == 0) {
+                if (indices.length > 0) {
+                  let valorCategoria = $('<span>')
+                  .css(that.styles.valorCategoria)
+                  .text(categoria.valor);
+
+                  listaIndices.append(valorCategoria);
+                }
+              }
+
+              let linhaIndice = $('<div>')
+              .css(that.styles.linhaIndice)
+              .append(indices[j].valor)
+              .append(listaAssociacoesIndicePagina);
+
+              listaIndices.append(linhaIndice);
+
+              that._listarAssociacoesIndicePagina(indices[j].id).each((associacao) => {
 
                 let itemAssociacao = $('<li>')
                 .text('Pág. ' + associacao.idPagina)
@@ -532,24 +561,6 @@ class IndiceAnalitico {
                 });
 
                 listaAssociacoesIndicePagina.append(itemAssociacao);
-              }).then(() => {
-
-                if (i == 0) {
-                  if (indices.length > 0) {
-                    let valorCategoria = $('<span>')
-                    .css(that.styles.valorCategoria)
-                    .text(categoria.valor);
-
-                    listaIndices.append(valorCategoria);
-                  }
-                }
-
-                let linhaIndice = $('<div>')
-                .css(that.styles.linhaIndice)
-                .append(indices[i].valor)
-                .append(listaAssociacoesIndicePagina);
-
-                listaIndices.append(linhaIndice);
               });
             }
           });
