@@ -441,6 +441,19 @@ class IndiceAnalitico {
     });
   }
 
+  _ordenarAssociacoesIndicePagina(associacoes) {
+    return associacoes
+    .sort((a, b) => {
+      if (a.id > b.id) {
+        return 1;
+      } else if (a.id < b.id) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
   construirIndices(idPagina) {
     let that = this;
 
@@ -551,16 +564,22 @@ class IndiceAnalitico {
 
               listaIndices.append(linhaIndice);
 
+              let associacoesIndicePagina = [];
               that._listarAssociacoesIndicePagina(indices[j].id).each((associacao) => {
+                associacoesIndicePagina.push(associacao);
+              }).then(() => {
+                associacoesIndicePagina = that._ordenarAssociacoesIndicePagina(associacoesIndicePagina);
 
-                let itemAssociacao = $('<li>')
-                .text('Pág. ' + associacao.idPagina)
-                .css(that.styles.itemAssociacao)
-                .on('click', () => {
-                  aoEscolherPagina(associacao.idPagina);
-                });
+                for (let k = 0; k < associacoesIndicePagina.length; k++) {
+                  let itemAssociacao = $('<li>')
+                  .text('Pág. ' + associacoesIndicePagina[k].idPagina)
+                  .css(that.styles.itemAssociacao)
+                  .on('click', () => {
+                    aoEscolherPagina(associacoesIndicePagina[k].idPagina);
+                  });
 
-                listaAssociacoesIndicePagina.append(itemAssociacao);
+                  listaAssociacoesIndicePagina.append(itemAssociacao);
+                }
               });
             }
           });
